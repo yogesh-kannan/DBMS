@@ -1,0 +1,318 @@
+TO SELECT THE TRAINER WHO HAS THE MAXIMUM AGE
+==============================================
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age = (SELECT MAX(age) FROM Trainer);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Lance                                  25
+
+TO SELECT TRAINER WHERE AGE IS GREATER THAN THE AVERAGE AGE
+===========================================================
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age > (SELECT AVG(age) FROM Trainer);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Lance                                  25
+
+TO SELECT TRAINER WHO HAS MINIMUM AND MAXIMUM BADGE
+===================================================
+
+SQL> SELECT trainer_name, badge
+  2  FROM Trainer
+  3  WHERE badge IN (SELECT badge FROM Trainer WHERE AGE >= 17);
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Lance                                   8
+Brock                                   1
+
+TO SELECT TRAINER WHO HAS THE SAME NUMBER OF BADGES LIKE ASH
+=============================================================
+SQL>
+SQL> SELECT trainer_name, badge
+  2  FROM Trainer
+  3  WHERE badge IN (SELECT badge FROM Trainer WHERE trainer_name = 'Ash');
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Ash                                     2
+Misty                                   2
+
+TO SELECT TRAINER USING THE KEYWORD ANY AND ALL WITH THE CONDTION <,>,=
+=======================================================================
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age < ANY (SELECT age FROM Trainer WHERE age > 18);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Ash                                    15
+Misty                                  16
+Brock                                  17
+
+SQL>
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age < ALL (SELECT age FROM Trainer WHERE age > 18);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Brock                                  17
+Misty                                  16
+Ash                                    15
+
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age >ALL (SELECT age FROM Trainer WHERE age > 16);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+May                                  26
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age > ANY (SELECT age FROM Trainer WHERE age > 18);
+
+
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+May                                  26
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age = ALL (SELECT age FROM Trainer WHERE age > 16);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Lance                                  25
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age = ANY (SELECT age FROM Trainer WHERE age > 18);
+
+
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Lance                                  25
+
+TO SELECT TRAINERS WHO HAS THE SAME NUMBER OF BADGES AS ASH
+===========================================================
+
+SQL> SELECT C1.trainer_name, C1.badge
+  2  FROM Trainer C1
+  3  WHERE C1.badge IN (
+  4    SELECT C2.badge
+  5    FROM Trainer C2
+  6    WHERE C2.trainer_name = 'Ash'
+  7  );
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Ash                                     2
+Misty                                   2
+
+TO SELECT TRAINERS WHO ARE MASTERS
+==================================
+
+SQL> SELECT C1.trainer_name, C1.badge, C1.master_name
+  2  FROM Trainer C1
+  3  WHERE (C1.badge, C1.master_name) IN (
+  4    SELECT C2.badge, C2.trainer_name
+  5    FROM Trainer C2
+  6  );
+
+TRAINER_NAME                        BADGE MASTER_NAME
+------------------------------ ---------- -------------------------
+Lance                                   8 Lance
+
+TO SELECT TRAINERS WHO ARE YOUNGER THAN THE MASRER
+==================================================
+
+SQL> SELECT C1.trainer_name, C1.age
+  2  FROM Trainer C1
+  3  WHERE C1.age < (
+  4    SELECT C2.age
+  5    FROM Trainer C2
+  6    WHERE C1.master_name = C2.trainer_name
+  7  );
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Ash                                    15
+Misty                                  16
+Brock                                  17
+
+TO GET THE DISTINCT BADGE NUMBER AND THEIR COUNT
+================================================
+
+SQL> SELECT badge, COUNT(*) AS NUM_BADGE
+  2  FROM (SELECT badge FROM Trainer)
+  3  GROUP BY badge;
+
+     BADGE  NUM_BADGE
+---------- ----------
+         8          1
+         2          2
+         1          1
+TO GET THE TRAUNERS WHO ARE OLDER THAN THE AVERAGE AGE
+======================================================
+
+SQL> SELECT C1.trainer_name, C1.badge, C1.age,
+  2         (SELECT AVG(age)
+  3          FROM Trainer C2
+  4          WHERE C2.badge = C1.badge) AS AVG_BADGE_AGE
+  5  FROM Trainer C1;
+
+TRAINER_NAME                        BADGE        AGE AVG_BADGE_AGE
+------------------------------ ---------- ---------- -------------
+Lance                                   8         25            25
+Ash                                     2         15          15.5
+Misty                                   2         16          15.5
+Brock                                   1         17            17
+
+TO GET THE TRAINERS WHO ARE OLDER THAN AVERAGE AGE AND GROUP BY BADGE
+=====================================================================
+
+SQL> SELECT badge, AVG(age) AS AVG_AGE
+  2  FROM Trainer
+  3  GROUP BY badge
+  4  HAVING AVG(age) > (SELECT AVG(age) FROM Trainer);
+
+     BADGE    AVG_AGE
+---------- ----------
+         8         25
+
+TO GET THE TRAINERS WHO HAS THE MASTER
+======================================
+
+SQL> SELECT trainer_name, master_name
+  2  FROM Trainer C1
+  3  WHERE EXISTS (
+  4    SELECT 1
+  5    FROM Trainer C2
+  6    WHERE C1.master_name = C2.trainer_name
+  7  );
+
+TRAINER_NAME                   MASTER_NAME
+------------------------------ -------------------------
+Lance                          Lance
+Ash                            Lance
+Misty                          Lance
+Brock                          Lance
+
+TO GET THE TRAINERS WHO HAS THE SAME NUMBER OF BADGES
+=====================================================
+
+SQL> SELECT C1.trainer_name, C1.badge
+  2  FROM Trainer C1
+  3  WHERE EXISTS (
+  4    SELECT 1
+  5    FROM Trainer C2
+  6    WHERE C1.badge = C2.badge
+  7    AND C1.trainer_name <> C2.trainer_name
+  8  );
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Misty                                   2
+Ash                                     2
+
+TO GET THE TRAINERS WHO ARE MASTER
+==================================
+
+SQL> SELECT trainer_name, age
+  2  FROM Trainer C1
+  3  WHERE NOT EXISTS (
+  4    SELECT 1
+  5    FROM Trainer C2
+  6    WHERE C1.master_name <> C2.trainer_name
+  7  );
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Lance                                  25
+
+TO FIND TRAINER WHOSE AGE IS ABOVE THE AVERAGE AGE USING WITH CLAUSE
+===================================================================
+
+SQL> WITH AvgAge AS (
+  2    SELECT AVG(age) AS avg_age FROM Trainer
+  3  )
+  4  SELECT trainer_name, age
+  5  FROM Trainer
+  6  WHERE age > (SELECT avg_age FROM AvgAge);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Lance                                  25
+
+TO DISPLAY TRAINERS AGE IS ABOVE THE AVERAGE AND WHO HAS THE SAME NO OF BADGE AS MORE THAN 1 TRAINERS
+=====================================================================================================
+
+SQL> WITH AvgAge AS (
+  2    SELECT AVG(age) AS avg_age FROM Trainer
+  3  ),
+  4  BadgeCount AS (
+  5    SELECT badge, COUNT(*) AS badge_count
+  6    FROM Trainer
+  7    GROUP BY badge
+  8  )
+  9  SELECT C1.trainer_name, C1.age, C2.badge, C2.badge_count
+ 10  FROM Trainer C1
+ 11  JOIN BadgeCount C2 ON C1.badge = C2.badge
+ 12  WHERE C1.age > (SELECT avg_age FROM AvgAge)
+ 13  AND C2.badge_count > 1;
+
+TRAINER_NAME                          AGE      BADGE BADGE_COUNT
+------------------------------ ---------- ---------- -----------
+Ash                                    25          2           2
+Misty                                  25          2           2
+
+TO FETCH TRAINER NAMES AND THEIR MASTER NAME FOR TRAINERS WHO HAS 2 BADGES
+==========================================================================
+
+SQL> SELECT trainer_name,
+  2         (SELECT master_name FROM Trainer WHERE trainer_name = 'ash') AS MASTER_NAME
+  3  FROM Trainer
+  4  WHERE badge = 2;
+
+TRAINER_NAME                   MASTER_NAME
+------------------------------ -------------------------
+Ash
+Misty
+
+TO FIND TRAINERS WHOSE AGE IS GREATER THAN AVERAGE AGE(scalar subquery)
+
+
+SQL> SELECT trainer_name,age
+  2  FROM Trainer
+  3  WHERE age > (SELECT AVG(age) FROM Trainer);
+
+TRAINER_NAME                          AGE
+------------------------------ ----------
+Lance                                  25
+
+TO FIND TRAINERS WHOSE MASTER HAS THE SAME MONEY AS THE TRAINER BY MATCHING 3 COLOUMNS THROUGH A MULTI COLOUMN SUB QUERY
+=========================================================================================================================
+
+SQL> select a.trainer_id,a.master_id
+  2  from trainer a
+  3  where (a.trainer_id,a.money) in (
+  4  select b.trainer_id,b.money
+  5  from trainer b
+  6  where a.master_id=b.trainer_id
+  7  );
+
+TRAINER_ID  MASTER_ID
+---------- ----------
+         1          1
