@@ -1,0 +1,695 @@
+SQL> CREATE TABLE Pokemon(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    pokemon_name VARCHAR2(20) NOT NULL,
+  4    experience NUMBER DEFAULT 0,
+  5    level NUMBER DEFAULT 5,
+  6    height FLOAT NOT NULL,
+  7    weight FLOAT NOT NULL,
+  8    location VARCHAR2(20) NOT NULL
+  9  );
+  level NUMBER DEFAULT 5,
+  *
+ERROR at line 5:
+ORA-00904: : invalid identifier
+
+
+SQL> CREATE TABLE Pokemon(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    pokemon_name VARCHAR2(20) NOT NULL,
+  4    experience NUMBER DEFAULT 0,
+  5    level NUMBER NOT NULL,
+  6    height FLOAT NOT NULL,
+  7    weight FLOAT NOT NULL,
+  8    location VARCHAR2(20) NOT NULL
+  9  );
+  level NUMBER NOT NULL,
+  *
+ERROR at line 5:
+ORA-00904: : invalid identifier
+
+
+SQL> pokemon_id NUMBER PRIMARY KEY,
+SP2-0734: unknown command beginning "pokemon_id..." - rest of line ignored.
+SQL>   pokemon_name VARCHAR2(20) NOT NULL,
+SP2-0734: unknown command beginning "pokemon_na..." - rest of line ignored.
+SQL>   experience NUMBER DEFAULT 0,
+SP2-0734: unknown command beginning "experience..." - rest of line ignored.
+SQL>   level NUMBER NOT NULL,
+SP2-0734: unknown command beginning "level NUMB..." - rest of line ignored.
+SP2-0044: For a list of known commands enter HELP
+and to leave enter EXIT.
+SQL>  CREATE TABLE Pokemon(
+  2   height FLOAT NOT NULL,
+  3    weight FLOAT NOT NULL,
+  4    location VARCHAR2(20) NOT NULL
+
+  5   CREATE TABLE Pokemon(SQL> CREATE TABLE Pokemon(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    pokemon_name VARCHAR2(20) NOT NULL,
+  4    experience NUMBER DEFAULT 0,
+  5    lv NUMBER DEFAULT 5,
+  6    height FLOAT NOT NULL,
+  7    weight FLOAT NOT NULL,
+  8    location VARCHAR2(20) NOT NULL
+  9  );
+
+Table created.
+
+SQL> DESC
+Usage: DESCRIBE [schema.]object[@db_link]
+SQL> CREATE TABLE Region(
+  2    region_name VARCHAR2(20) PRIMARY KEY,
+  3    game_name VARCHAR2(20) NOT NULL,
+  4    generation NUMBER NOT NULL,
+  5    route VARCHAR2(20) NOT NULL,
+  6    league_city VARCHAR2(20) NOT NULL
+  7  );
+
+Table created.
+
+SQL> CREATE TABLE Trainer(
+  2    trainer_id NUMBER PRIMARY KEY,
+  3    trainer_name VARCHAR2(20) NOT NULL,
+  4    badge NUMBER DEFAULT 0,
+  5    age NUMBER DEFAULT 10,
+  6    gender VARCHAR2(20) NOT NULL,
+  7    money FLOAT DEFAULT 0.0,
+  8    advt_st_on VARCHAR2(20) NOT NULL,
+  9    master_id NUMBER,
+ 10    pokemon_id NUMBER,
+ 11    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+ 12  );
+
+Table created.
+
+SQL> CREATE TABLE Bag(
+  2    bag_id NUMBER PRIMARY KEY,
+  3    trainer_id NUMBER UNIQUE,
+  4    FOREIGN KEY(trainer_id) REFERENCES Trainer(trainer_id)
+  5  );
+
+Table created.
+
+SQL> CREATE TABLE Bag_Gen(
+  2    bag_id NUMBER,
+  3    general_item VARCHAR2(20) NOT NULL,
+  4    PRIMARY KEY(bag_id, general_item),
+  5    FOREIGN KEY(bag_id) REFERENCES Bag(bag_id)
+  6  );
+
+Table created.
+
+SQL> CREATE TABLE Bag_Key(
+  2    bag_id NUMBER,
+  3    key_item VARCHAR2(20) NOT NULL,
+  4    PRIMARY KEY(bag_id, key_item),
+  5    FOREIGN KEY(bag_id) REFERENCES Bag(bag_id)
+  6  );
+
+Table created.
+
+SQL> CREATE TABLE Bag_Medicine(
+  2    bag_id NUMBER,
+  3    medicine VARCHAR2(20) NOT NULL,
+  4    PRIMARY KEY(bag_id, medicine),
+  5    FOREIGN KEY(bag_id) REFERENCES Bag(bag_id)
+  6  );
+
+Table created.
+
+SQL> CREATE TABLE Bag_Berry(
+  2    bag_id NUMBER,
+  3    berry VARCHAR2(20) NOT NULL,
+  4    PRIMARY KEY(bag_id, berry),
+  5    FOREIGN KEY(bag_id) REFERENCES Bag(bag_id)
+  6  );
+
+Table created.
+
+SQL> CREATE TABLE Stats(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    attack NUMBER NOT NULL,
+  4    defence NUMBER NOT NULL,
+  5    sp_attack NUMBER NOT NULL,
+  6    sp_defence NUMBER NOT NULL,
+  7    speed NUMBER NOT NULL,
+  8    total NUMBER NOT NULL,
+  9    hp NUMBER NOT NULL,
+ 10    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+ 11  );
+
+Table created.
+
+SQL> CREATE TABLE Evolution(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    level1 VARCHAR2(20) NOT NULL,
+  4    level2 VARCHAR2(20),
+  5    level3 VARCHAR2(20),
+  6    evolution_item VARCHAR2(20),
+  7    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  8  );
+
+Table created.
+
+SQL> CREATE TABLE Training(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    evyield_number NUMBER NOT NULL,
+  4    evyield_st VARCHAR2(20) NOT NULL,
+  5    catchrate FLOAT NOT NULL,
+  6    growthrate FLOAT NOT NULL,
+  7    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  8  );
+
+Table created.
+
+SQL> CREATE TABLE Type(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    type1 VARCHAR2(20) NOT NULL,
+  4    type2 VARCHAR2(20),
+  5    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  6  );
+
+Table created.
+
+SQL> CREATE TABLE Ability(
+  2    pokemon_id NUMBER PRIMARY KEY,
+  3    ability1 VARCHAR2(20),
+  4    ability_desc VARCHAR2(30),
+  5    hidden_ability VARCHAR2(20),
+  6    hidden_ability_desc VARCHAR2(30),
+  7    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  8  );
+
+Table created.
+
+SQL> CREATE TABLE Captured_Pokemon(
+  2    trainer_id NUMBER,
+  3    pokemon_id NUMBER,
+  4    capture_date VARCHAR2(20) NOT NULL,
+  5    PRIMARY KEY(trainer_id, pokemon_id),
+  6    FOREIGN KEY(trainer_id) REFERENCES Trainer(trainer_id),
+  7    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  8  );
+
+Table created.
+
+SQL> CREATE TABLE NM(
+  2    move_number NUMBER PRIMARY KEY,
+  3    move_type VARCHAR2(20) NOT NULL,
+  4    power NUMBER NOT NULL,
+  5    accuracy NUMBER NOT NULL,
+  6    category VARCHAR2(20) NOT NULL,
+  7    pp NUMBER NOT NULL,
+  8    description VARCHAR2(20) NOT NULL
+  9  );
+
+Table created.
+
+SQL> CREATE TABLE TM(
+  2    move_number NUMBER PRIMARY KEY,
+  3    FOREIGN KEY(move_number) REFERENCES NM(move_number)
+  4  );
+
+Table created.
+
+SQL> CREATE TABLE HM(
+  2    move_number NUMBER PRIMARY KEY,
+  3    FOREIGN KEY(move_number) REFERENCES NM(move_number)
+  4  );
+
+Table created.
+
+SQL> CREATE TABLE Region_Trainer(
+  2    region_name VARCHAR2(20),
+  3    trainer_id NUMBER,
+  4    PRIMARY KEY(region_name, trainer_id),
+  5    FOREIGN KEY(region_name) REFERENCES Region(region_name),
+  6    FOREIGN KEY(trainer_id) REFERENCES Trainer(trainer_id)
+  7  );
+
+Table created.
+
+SQL> CREATE TABLE Move_Pokemon(
+  2    move_number NUMBER,
+  3    pokemon_id NUMBER,
+  4    PRIMARY KEY(move_number, pokemon_id),constraint c1 FOREIGN KEY(move_number) REFERENCES NM(move_number),
+  6    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  7  );
+
+Table created.
+
+SQL> desc Pokemon
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ POKEMON_NAME                              NOT NULL VARCHAR2(20)
+ EXPERIENCE                                         NUMBER
+ LV                                                 NUMBER
+ HEIGHT                                    NOT NULL FLOAT(126)
+ WEIGHT                                    NOT NULL FLOAT(126)
+ LOCATION                                  NOT NULL VARCHAR2(20)
+
+SQL> desc Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ TRAINER_NAME                              NOT NULL VARCHAR2(20)
+ BADGE                                              NUMBER
+ AGE                                                NUMBER
+ GENDER                                    NOT NULL VARCHAR2(20)
+ MONEY                                              FLOAT(126)
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20)
+ MASTER_ID                                          NUMBER
+ POKEMON_ID                                         NUMBER
+
+SQL> desc Region
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REGION_NAME                               NOT NULL VARCHAR2(20)
+ GAME_NAME                                 NOT NULL VARCHAR2(20)
+ GENERATION                                NOT NULL NUMBER
+ ROUTE                                     NOT NULL VARCHAR2(20)
+ LEAGUE_CITY                               NOT NULL VARCHAR2(20)
+
+SQL> desc Bag
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BAG_ID                                    NOT NULL NUMBER
+ TRAINER_ID                                         NUMBER
+
+SQL> desc Bag_Gen
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BAG_ID                                    NOT NULL NUMBER
+ GENERAL_ITEM                              NOT NULL VARCHAR2(20)
+
+SQL> desc Bag_Key
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BAG_ID                                    NOT NULL NUMBER
+ KEY_ITEM                                  NOT NULL VARCHAR2(20)
+
+SQL> desc Bag_Medicine
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BAG_ID                                    NOT NULL NUMBER
+ MEDICINE                                  NOT NULL VARCHAR2(20)
+
+SQL> desc Bag_Berry
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BAG_ID                                    NOT NULL NUMBER
+ BERRY                                     NOT NULL VARCHAR2(20)
+
+SQL> desc Stats
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ ATTACK                                    NOT NULL NUMBER
+ DEFENCE                                   NOT NULL NUMBER
+ SP_ATTACK                                 NOT NULL NUMBER
+ SP_DEFENCE                                NOT NULL NUMBER
+ SPEED                                     NOT NULL NUMBER
+ TOTAL                                     NOT NULL NUMBER
+ HP                                        NOT NULL NUMBER
+
+SQL> desc Evolution
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ LEVEL1                                    NOT NULL VARCHAR2(20)
+ LEVEL2                                             VARCHAR2(20)
+ LEVEL3                                             VARCHAR2(20)
+ EVOLUTION_ITEM                                     VARCHAR2(20)
+
+SQL> desc Training
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ EVYIELD_NUMBER                            NOT NULL NUMBER
+ EVYIELD_ST                                NOT NULL VARCHAR2(20)
+ CATCHRATE                                 NOT NULL FLOAT(126)
+ GROWTHRATE                                NOT NULL FLOAT(126)
+
+SQL> desc Type
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ TYPE1                                     NOT NULL VARCHAR2(20)
+ TYPE2                                              VARCHAR2(20)
+
+SQL> desc Ability
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ ABILITY1                                           VARCHAR2(20)
+ ABILITY_DESC                                       VARCHAR2(30)
+ HIDDEN_ABILITY                                     VARCHAR2(20)
+ HIDDEN_ABILITY_DESC                                VARCHAR2(30)
+
+SQL> desc Captured_Pokemon
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ POKEMON_ID                                NOT NULL NUMBER
+ CAPTURE_DATE                              NOT NULL VARCHAR2(20)
+
+SQL> desc NM
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ MOVE_NUMBER                               NOT NULL NUMBER
+ MOVE_TYPE                                 NOT NULL VARCHAR2(20)
+ POWER                                     NOT NULL NUMBER
+ ACCURACY                                  NOT NULL NUMBER
+ CATEGORY                                  NOT NULL VARCHAR2(20)
+ PP                                        NOT NULL NUMBER
+ DESCRIPTION                               NOT NULL VARCHAR2(20)
+
+SQL> desc TM
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ MOVE_NUMBER                               NOT NULL NUMBER
+
+SQL> desc HM
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ MOVE_NUMBER                               NOT NULL NUMBER
+
+SQL> desc Region_Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ REGION_NAME                               NOT NULL VARCHAR2(20)
+ TRAINER_ID                                NOT NULL NUMBER
+
+SQL> desc Move_Pokemon
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ MOVE_NUMBER                               NOT NULL NUMBER
+ POKEMON_ID                                NOT NULL NUMBER
+
+SQL> ALTER TABLE Pokémon ADD habitat VARCHAR2(20);
+ALTER TABLE Pokémon ADD habitat VARCHAR2(20)
+               *
+ERROR at line 1:
+ORA-00911: invalid character
+
+
+SQL> ALTER TABLE Pokemon ADD habitat VARCHAR2(20);
+
+Table altered.
+
+SQL> desc Pokemon
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ POKEMON_NAME                              NOT NULL VARCHAR2(20)
+ EXPERIENCE                                         NUMBER
+ LV                                                 NUMBER
+ HEIGHT                                    NOT NULL FLOAT(126)
+ WEIGHT                                    NOT NULL FLOAT(126)
+ LOCATION                                  NOT NULL VARCHAR2(20)
+ HABITAT                                            VARCHAR2(20)
+
+SQL> ALTER TABLE Trainer MODIFY trainer_name VARCHAR2(30);
+
+Table altered.
+
+SQL> desc Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ TRAINER_NAME                              NOT NULL VARCHAR2(30)
+ BADGE                                              NUMBER
+ AGE                                                NUMBER
+ GENDER                                    NOT NULL VARCHAR2(20)
+ MONEY                                              FLOAT(126)
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20)
+ MASTER_ID                                          NUMBER
+ POKEMON_ID                                         NUMBER
+
+SQL> ALTER TABLE Region ADD CONSTRAINT pk_region PRIMARY KEY (region_name);
+ALTER TABLE Region ADD CONSTRAINT pk_region PRIMARY KEY (region_name)
+                                            *
+ERROR at line 1:
+ORA-02260: table can have only one primary key
+
+
+SQL> ALTER TABLE Bag ADD CONSTRAINT uq_trainer UNIQUE (trainer_id);
+ALTER TABLE Bag ADD CONSTRAINT uq_trainer UNIQUE (trainer_id)
+                                          *
+ERROR at line 1:
+ORA-02261: such unique or primary key already exists in the table
+
+
+SQL> ALTER TABLE Trainer ADD CONSTRAINT chk_age CHECK (age >= 10);
+
+Table altered.
+
+SQL> desc Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ TRAINER_NAME                              NOT NULL VARCHAR2(30)
+ BADGE                                              NUMBER
+ AGE                                                NUMBER
+ GENDER                                    NOT NULL VARCHAR2(20)
+ MONEY                                              FLOAT(126)
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20)
+ MASTER_ID                                          NUMBER
+ POKEMON_ID                                         NUMBER
+
+SQL> ALTER TABLE Pokémon DROP COLUMN habitat;
+ALTER TABLE Pokémon DROP COLUMN habitat
+               *
+ERROR at line 1:
+ORA-00911: invalid character
+
+
+SQL> ALTER TABLE Pokemon DROP COLUMN habitat;
+
+Table altered.
+
+SQL> desc Pokemon
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ POKEMON_NAME                              NOT NULL VARCHAR2(20)
+ EXPERIENCE                                         NUMBER
+ LV                                                 NUMBER
+ HEIGHT                                    NOT NULL FLOAT(126)
+ WEIGHT                                    NOT NULL FLOAT(126)
+ LOCATION                                  NOT NULL VARCHAR2(20)
+
+SQL> ALTER TABLE Trainer DROP CONSTRAINT chk_age;
+
+Table altered.
+
+SQL> desc Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ TRAINER_NAME                              NOT NULL VARCHAR2(30)
+ BADGE                                              NUMBER
+ AGE                                                NUMBER
+ GENDER                                    NOT NULL VARCHAR2(20)
+ MONEY                                              FLOAT(126)
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20)
+ MASTER_ID                                          NUMBER
+ POKEMON_ID                                         NUMBER
+
+SQL> ALTER TABLE Trainer RENAME COLUMN money TO coins;
+
+Table altered.
+
+SQL> desc Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ TRAINER_NAME                              NOT NULL VARCHAR2(30)
+ BADGE                                              NUMBER
+ AGE                                                NUMBER
+ GENDER                                    NOT NULL VARCHAR2(20)
+ COINS                                              FLOAT(126)
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20)
+ MASTER_ID                                          NUMBER
+ POKEMON_ID                                         NUMBER
+
+SQL> ALTER TABLE NM RENAME TO Normal_Move;
+
+Table altered.
+
+SQL> desc Normal_Move
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ MOVE_NUMBER                               NOT NULL NUMBER
+ MOVE_TYPE                                 NOT NULL VARCHAR2(20)
+ POWER                                     NOT NULL NUMBER
+ ACCURACY                                  NOT NULL NUMBER
+ CATEGORY                                  NOT NULL VARCHAR2(20)
+ PP                                        NOT NULL NUMBER
+ DESCRIPTION                               NOT NULL VARCHAR2(20)
+
+SQL> ALTER TABLE Trainer MODIFY badge DEFAULT 0;
+
+Table altered.
+
+SQL> desc Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ TRAINER_NAME                              NOT NULL VARCHAR2(30)
+ BADGE                                              NUMBER
+ AGE                                                NUMBER
+ GENDER                                    NOT NULL VARCHAR2(20)
+ COINS                                              FLOAT(126)
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20)
+ MASTER_ID                                          NUMBER
+ POKEMON_ID                                         NUMBER
+
+SQL> TRUNCATE TABLE Pokemon;
+
+Table truncated.
+
+SQL> desc Pokemon
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POKEMON_ID                                NOT NULL NUMBER
+ POKEMON_NAME                              NOT NULL VARCHAR2(20)
+ EXPERIENCE                                         NUMBER
+ LV                                                 NUMBER
+ HEIGHT                                    NOT NULL FLOAT(126)
+ WEIGHT                                    NOT NULL FLOAT(126)
+ LOCATION                                  NOT NULL VARCHAR2(20)
+
+SQL> TRUNCATE TABLE Trainer;
+
+Table truncated.
+
+SQL> TRUNCATE TABLE Move_Pokemon;
+
+Table truncated.
+
+SQL> TRUNCATE TABLE Bag_Gen;
+
+Table truncated.
+
+SQL> TRUNCATE TABLE Bag_Key;
+
+Table truncated.
+
+SQL> TRUNCATE TABLE Bag_Medicine;
+
+Table truncated.
+
+SQL> TRUNCATE TABLE Bag_Berry;
+
+Table truncated.
+
+SQL> DROP TABLE Move_Pokemon;
+
+Table dropped.
+
+SQL> desc Move_Pokemon
+ERROR:
+ORA-04043: object Move_Pokemon does not exist
+
+
+SQL> DROP TABLE Bag_Gen;
+
+Table dropped.
+
+SQL> desc Bag_gen
+ERROR:
+ORA-04043: object Bag_gen does not exist
+
+
+SQL> desc Bag_Gen
+ERROR:
+ORA-04043: object Bag_Gen does not exist
+
+
+SQL> ALTER TABLE Bag ADD CONSTRAINT uq_trainer UNIQUE (trainer_name);
+ALTER TABLE Bag ADD CONSTRAINT uq_trainer UNIQUE (trainer_name)
+                                                  *
+ERROR at line 1:
+ORA-00904: "TRAINER_NAME": invalid identifier
+
+
+SQL> ALTER TABLE Pokemon
+  2  DROP COLUMN habitat;
+DROP COLUMN habitat
+            *
+ERROR at line 2:
+ORA-00904: "HABITAT": invalid identifier
+
+
+SQL> CREATE TABLE Move_Pokemon(
+  2    move_number NUMBER,
+  3    pokemon_id NUMBER,
+  4    PRIMARY KEY(move_number, pokemon_id),
+  5    FOREIGN KEY(move_number) REFERENCES NM(move_number),
+  6    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  7  );
+  FOREIGN KEY(move_number) REFERENCES NM(move_number),
+                                      *
+ERROR at line 5:
+ORA-00942: table or view does not exist
+
+
+SQL> ALTER TABLE Trainer RENAME COLUMN coins TO money;
+
+Table altered.
+
+SQL> desc Trainer
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TRAINER_ID                                NOT NULL NUMBER
+ TRAINER_NAME                              NOT NULL VARCHAR2(30)
+ BADGE                                              NUMBER
+ AGE                                                NUMBER
+ GENDER                                    NOT NULL VARCHAR2(20)
+ MONEY                                              FLOAT(126)
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20)
+ MASTER_ID                                          NUMBER
+ POKEMON_ID                                         NUMBER
+
+SQL> ALTER TABLE Normal_Move RENAME TO NM;
+
+Table altered.
+
+SQL> CREATE TABLE Move_Pokemon(
+  2    move_number NUMBER,
+  3    pokemon_id NUMBER,
+  4    PRIMARY KEY(move_number, pokemon_id),
+  5    FOREIGN KEY(move_number) REFERENCES NM(move_number),
+  6    FOREIGN KEY(pokemon_id) REFERENCES Pokemon(pokemon_id)
+  7  );
+
+Table created.
+
+SQL>
+SQL> CREATE TABLE Bag_Gen(
+  2    bag_id NUMBER,
+  3    general_item VARCHAR2(20) NOT NULL,
+  4    PRIMARY KEY(bag_id, general_item),
+  5    FOREIGN KEY(bag_id) REFERENCES Bag(bag_id)
+  6  );
+
+Table created.
+
+SQL> desc NM
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ MOVE_NUMBER                               NOT NULL NUMBER
+ MOVE_TYPE                                 NOT NULL VARCHAR2(20)
+ POWER                                     NOT NULL NUMBER
+ ACCURACY                                  NOT NULL NUMBER
+ CATEGORY                                  NOT NULL VARCHAR2(20)
+ PP                                        NOT NULL NUMBER
+ DESCRIPTION                               NOT NULL VARCHAR2(20)
+
+SQL> desc Bag_Gen
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BAG_ID                                    NOT NULL NUMBER
+ GENERAL_ITEM                              NOT NULL VARCHAR2(20)
