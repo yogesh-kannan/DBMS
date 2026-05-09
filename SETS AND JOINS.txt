@@ -1,0 +1,578 @@
+DISPLAYING TABLES
+=================
+
+SQL> select * from Pokemon;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+        25 Pikachu                     200          5         .4          6
+Forest
+
+         1 Bulbasaur                   300          6         .7        6.9
+Grass
+
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+         7 Squirtle                    220          5         .5          9
+Lake
+
+       133 Eevee                       180          5         .3        6.5
+City
+
+
+SQL> select * from Pokemon_copy;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+         7 Squirtle                    220          5         .5          9
+Lake
+
+       133 Eevee                       180          5         .3        6.5
+City
+
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+
+SQL> select * from Pokemon1;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+        25 Pikachu                     200          5         .4          6
+Forest
+
+         1 Bulbasaur                   300          6         .7        6.9
+Grass
+
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+TO DO UNION OPERATION OF TWO TABLES WITHOUT DUPLICATE USING UNION KEYWORD
+=========================================================================
+
+SQL> SELECT pokemon_name FROM Pokemon
+  2  UNION
+  3  SELECT Pokemon_name FROM Pokemon_Copy;
+
+POKEMON_NAME
+--------------------
+Pikachu
+Bulbasaur
+Charmander
+Squirtle
+Eevee
+
+TO DO UNION OPERATION OF TWO TABLES WITH DUPLICATE USING UNION ALL KEYWORD
+==========================================================================
+
+SQL> SELECT Pokemon_name FROM Pokemon
+  2  UNION ALL
+  3  SELECT pokemon_name FROM Pokemon_Copy;
+
+POKEMON_NAME
+--------------------
+Pikachu
+Bulbasaur
+Charmander
+Squirtle
+Eevee
+Squirtle
+Eevee
+Charmander
+
+8 rows selected.
+
+TO DO INTERSECTION OPERATION OF TWO TABLES USING INTERSECT KEYWORD
+=================================================================
+
+SQL> SELECT pokemon_name FROM Pokemon
+  2  INTERSECT
+  3  SELECT pokemon_name FROM Pokemon_Copy;
+
+POKEMON_NAME
+--------------------
+Charmander
+Squirtle
+Eevee
+
+TO DO INTERSECTION OPERATION OF TWO TABLES USING INTERSECT ALL KEYWORD
+======================================================================
+
+SQL> SELECT pokemon_name FROM Pokémon
+ intersect all
+ SELECT pokemon_name FROM Pokemon_Copy;
+
+POKEMON_NAME
+--------------------
+Charmander
+Squirtle
+Eevee
+
+TO DO MINUS OPERATION OF TWO TABLES USING MINUS KEYWORD
+=======================================================
+
+SQL> SELECT pokemon_name FROM Pokemon
+  2  MINUS
+  3  SELECT Pokemon_name FROM Pokemon_Copy;
+
+POKEMON_NAME
+--------------------
+Pikachu
+Bulbasaur
+
+SQL> SELECT pokemon_name FROM Pokemon_Copy
+  2  MINUS
+  3  SELECT Pokemon_name FROM Pokemon;
+
+no rows selected
+
+SQL> SELECT pokemon_name FROM Pokemon1
+  2  MINUS
+  3  SELECT pokemon_name FROM Pokemon;
+
+no rows selected
+
+DISPLAYING TABLES
+=================
+
+SQL> select * from Region;
+
+REGION_NAME          GAME_NAME            GENERATION ROUTE
+-------------------- -------------------- ---------- --------------------
+LEAGUE_CITY
+--------------------
+kanto                fire red                      1 1-25
+indigo plateau
+
+jhoto                gold                          2 29-48
+indigo plateau
+
+hoenn                ruby                          3 101-134
+ever grande city
+
+
+SQL> select * from Type;
+
+POKEMON_ID TYPE1                TYPE2
+---------- -------------------- --------------------
+         1 grass                poison
+         4 fire
+         7 water
+
+TO DO CARTESIAN OPERATION OF TWO TABLES USING , OPERATOR
+========================================================
+
+SQL> SELECT * FROM Region,Type;
+
+REGION_NAME          GAME_NAME            GENERATION ROUTE
+-------------------- -------------------- ---------- --------------------
+LEAGUE_CITY          POKEMON_ID TYPE1                TYPE2
+-------------------- ---------- -------------------- --------------------
+kanto                fire red                      1 1-25
+indigo plateau                1 grass                poison
+
+kanto                fire red                      1 1-25
+indigo plateau                4 fire
+
+kanto                fire red                      1 1-25
+indigo plateau                7 water
+
+
+REGION_NAME          GAME_NAME            GENERATION ROUTE
+-------------------- -------------------- ---------- --------------------
+LEAGUE_CITY          POKEMON_ID TYPE1                TYPE2
+-------------------- ---------- -------------------- --------------------
+jhoto                gold                          2 29-48
+indigo plateau                1 grass                poison
+
+jhoto                gold                          2 29-48
+indigo plateau                4 fire
+
+jhoto                gold                          2 29-48
+indigo plateau                7 water
+
+
+REGION_NAME          GAME_NAME            GENERATION ROUTE
+-------------------- -------------------- ---------- --------------------
+LEAGUE_CITY          POKEMON_ID TYPE1                TYPE2
+-------------------- ---------- -------------------- --------------------
+hoenn                ruby                          3 101-134
+ever grande city              1 grass                poison
+
+hoenn                ruby                          3 101-134
+ever grande city              4 fire
+
+hoenn                ruby                          3 101-134
+ever grande city              7 water
+
+
+9 rows selected.
+
+TO DO CARTESIAN OPERATION OF TWO TABLES USING JOIN KEYWORD
+=======================================================
+
+SQL> SELECT * FROM Region
+  2  CROSS JOIN Type;
+
+REGION_NAME          GAME_NAME            GENERATION ROUTE
+-------------------- -------------------- ---------- --------------------
+LEAGUE_CITY          POKEMON_ID TYPE1                TYPE2
+-------------------- ---------- -------------------- --------------------
+kanto                fire red                      1 1-25
+indigo plateau                1 grass                poison
+
+kanto                fire red                      1 1-25
+indigo plateau                4 fire
+
+kanto                fire red                      1 1-25
+indigo plateau                7 water
+
+
+REGION_NAME          GAME_NAME            GENERATION ROUTE
+-------------------- -------------------- ---------- --------------------
+LEAGUE_CITY          POKEMON_ID TYPE1                TYPE2
+-------------------- ---------- -------------------- --------------------
+jhoto                gold                          2 29-48
+indigo plateau                1 grass                poison
+
+jhoto                gold                          2 29-48
+indigo plateau                4 fire
+
+jhoto                gold                          2 29-48
+indigo plateau                7 water
+
+
+REGION_NAME          GAME_NAME            GENERATION ROUTE
+-------------------- -------------------- ---------- --------------------
+LEAGUE_CITY          POKEMON_ID TYPE1                TYPE2
+-------------------- ---------- -------------------- --------------------
+hoenn                ruby                          3 101-134
+ever grande city              1 grass                poison
+
+hoenn                ruby                          3 101-134
+ever grande city              4 fire
+
+hoenn                ruby                          3 101-134
+ever grande city              7 water
+
+
+9 rows selected.
+
+TO DO CROSS JOIN OPERATION OF TWO TABLES
+========================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.type1
+  2  FROM Type B, Pokemon A
+  3  WHERE B.pokemon_id = A.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+         1 Bulbasaur                     1 grass
+         4 Charmander                    4 fire
+         7 Squirtle                      7 water
+
+TO DO INNER JOIN OPERATION OF TWO TABLES USING INNER JOIN KEYWORD
+================================================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.type1
+  2  FROM Pokemon A
+  3  INNER JOIN Type B
+  4  ON B.pokemon_id = A.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+         1 Bulbasaur                     1 grass
+         4 Charmander                    4 fire
+         7 Squirtle                      7 water
+
+TO DO INNER JOIN OPERATION OF TWO TABLES USING JOIN KEYWORD
+===========================================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.type1,B.type2
+  2  FROM Pokemon A
+  3  JOIN Type B
+  4  ON B.pokemon_id = A.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         TYPE1                TYPE2
+---------- -------------------- -------------------- --------------------
+         1 Bulbasaur            grass                poison
+         4 Charmander           fire
+         7 Squirtle             water
+
+TO DO NATURAL JOIN OPERATION OF TWO TABLES USING NATURAL JOIN KEYWORD
+=====================================================================
+
+SQL> SELECT *
+  2  FROM Pokemon
+  3  NATURAL JOIN Pokemon_Copy;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+         7 Squirtle                    220          5         .5          9
+Lake
+
+       133 Eevee                       180          5         .3        6.5
+City
+
+
+SQL> SELECT *
+  2  FROM Pokemon B
+  3  NATURAL JOIN Pokemon_Copy A;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+         7 Squirtle                    220          5         .5          9
+Lake
+
+       133 Eevee                       180          5         .3        6.5
+City
+
+
+SQL> SELECT *
+  2  FROM Pokemon
+  3  NATURAL JOIN Pokemon1;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+        25 Pikachu                     200          5         .4          6
+Forest
+
+         1 Bulbasaur                   300          6         .7        6.9
+Grass
+
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+
+TO DO INNNER JOIN OPERATION OF TWO TABLES USING INNER JOIN KEYWORD
+==================================================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.type1,B.type2
+  2  FROM Pokemon A
+  3  INNER JOIN Type B
+  4  ON A.pokemon_id = B.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+TYPE2
+--------------------
+         1 Bulbasaur                     1 grass
+poison
+
+         4 Charmander                    4 fire
+
+
+         7 Squirtle                      7 water
+
+
+TO DO LEFT OUTER JOIN OPERATION OF TWO TABLES USING LEFT OUTER JOIN KEYWORD
+===========================================================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.type1,B.type2
+  2  FROM Pokemon A
+  3  LEFT OUTER JOIN Type B
+  4  ON A.pokemon_id = B.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+TYPE2
+--------------------
+        25 Pikachu
+
+
+         1 Bulbasaur                     1 grass
+poison
+
+         4 Charmander                    4 fire
+
+
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+TYPE2
+--------------------
+         7 Squirtle                      7 water
+
+
+       133 Eevee
+
+
+
+TO DO RIGHT OUTER JOIN OPERATION OF TWO TABLES USING RIGHT OUTER JOIN KEYWORD
+=============================================================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.type1,B.type2
+  2  FROM Pokemon A
+  3  right OUTER JOIN Type B
+  4  ON A.pokemon_id = B.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+TYPE2
+--------------------
+         1 Bulbasaur                     1 grass
+poison
+
+         4 Charmander                    4 fire
+
+
+                                         7 water
+
+
+TO DO FULL OUTER JOIN OPERATION OF TWO TABLES USING FULL OUTER JOIN KEYWORD
+===========================================================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.type1,B.type2
+  2  FROM Pokemon A
+  3  FULL OUTER JOIN Type B
+  4  ON A.pokemon_id = B.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+TYPE2
+--------------------
+        25 Pikachu
+
+
+         1 Bulbasaur                     1 grass
+poison
+
+         4 Charmander                    4 fire
+
+
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID TYPE1
+---------- -------------------- ---------- --------------------
+TYPE2
+--------------------
+                               7 water
+
+
+       133 Eevee
+
+
+SELF JOIN TO FIND THE MASTER OF TRAINERS IN THE TABLE TRAINER
+=============================================================
+
+SQL> SELECT C1.trainer_name AS TRAINER_NAME,
+  2         C1.trainer_id AS TRAINER_ID,
+  3         C2.master_name AS MASTER_NAME,
+  4         C2.master_id AS MASTER_ID
+  5  FROM Trainer C1
+  6  JOIN Trainer C2
+  7  ON C1.trainer_id = C2.master_id
+  8  AND C1.trainer_name = C2.master_name;
+
+TRAINER_NAME                   TRAINER_ID MASTER_NAME                MASTER_ID
+------------------------------ ---------- ------------------------- ----------
+Lance                                   1 Lance                              1
+Lance                                   1 Lance                              1
+Lance                                   1 Lance                              1
+Lance                                   1 Lance                              1
+
+TO DO NATURAL JOIN ON TABLES POKEMON,POKEMON1,POKEMON_COPY
+===========================================================
+
+SQL> select * from Pokemon natural join Pokemon1 natural join Pokemon_copy;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+
+TO JOIN TABLES USING USING COMMAND FOR TABLES POKEMON AND POKEMON1
+==================================================================
+
+SQL> select Pokemon.pokemon_name,Pokemon1.pokemon_name from Pokemon join Pokemon1 using (pokemon_id);
+
+POKEMON_NAME         POKEMON_NAME
+-------------------- --------------------
+Pikachu              Pikachu
+Bulbasaur            Bulbasaur
+
+
+TO JOIN MORE THAN TWO TABLE AND USING WHERE CLAUSE
+==================================================
+
+SQL> select p.pokemon_name,p1.experience from pokemon p join pokemon1 p1 on p.pokemon_id=p1.pokemon_id join pokemon_copy p2 on p.pokemon_id=p2.pokemon_id;
+
+POKEMON_NAME         EXPERIENCE
+-------------------- ----------
+Pikachu                     200
+Bulbasaur                   300
+Charmander                  250
+Squirtle                    220
+Eevee                       180
+
+TO DO CROSS JOIN WITH = CONDITION
+==================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.pokemon_name FROM Pokemon A cross join  Pokemon1 B where A.pokemon_id=B.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID POKEMON_NAME
+---------- -------------------- ---------- --------------------
+        25 Pikachu                      25 Pikachu
+         1 Bulbasaur                     1 Bulbasaur
+         4 Charmander                    4 Charmander
+         7 Squirtle                      7 Squirtle
+       133 Eevee                       133 Eevee
+
+TO DO  CROSS JOIN WITH <> CONDITION
+===================================
+
+SQL> SELECT A.pokemon_id,A.pokemon_name,B.pokemon_id,B.pokemon_name FROM Pokemon A cross join  Pokemon1 B where A.pokemon_id<>B.pokemon_id;
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID POKEMON_NAME
+---------- -------------------- ---------- --------------------
+        25 Pikachu                       1 Bulbasaur
+        25 Pikachu                       4 Charmander
+        25 Pikachu                       7 Squirtle
+        25 Pikachu                     133 Eevee
+         1 Bulbasaur                    25 Pikachu
+         1 Bulbasaur                     4 Charmander
+         1 Bulbasaur                     7 Squirtle
+         1 Bulbasaur                   133 Eevee
+         4 Charmander                   25 Pikachu
+         4 Charmander                    1 Bulbasaur
+         4 Charmander                    7 Squirtle
+
+POKEMON_ID POKEMON_NAME         POKEMON_ID POKEMON_NAME
+---------- -------------------- ---------- --------------------
+         4 Charmander                  133 Eevee
+         7 Squirtle                     25 Pikachu
+         7 Squirtle                      1 Bulbasaur
+         7 Squirtle                      4 Charmander
+         7 Squirtle                    133 Eevee
+       133 Eevee                        25 Pikachu
+       133 Eevee                         1 Bulbasaur
+       133 Eevee                         4 Charmander
+       133 Eevee                         7 Squirtle
+
+20 rows selected.
