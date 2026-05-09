@@ -1,0 +1,869 @@
+============================================================
+TRIGGER 1 -- BEFORE INSERT on Pokemon (IF -- block NULL name)
+============================================================
+SQL> CREATE OR REPLACE TRIGGER before_insert_pokemon
+  2  BEFORE INSERT ON Pokemon
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :NEW.POKEMON_NAME IS NULL THEN
+  6          RAISE_APPLICATION_ERROR(-20001, 'Pokemon name cannot be null.');
+  7      END IF;
+  8  END;
+  9  /
+
+Trigger created.
+
+SQL> INSERT INTO Pokemon(POKEMON_ID, POKEMON_NAME, EXPERIENCE, LV, HEIGHT, WEIGHT, LOCATION)
+  2  VALUES(39, 'Jigglypuff', 270, 5, 0.5, 5.5, 'Forest');
+
+1 row created.
+
+SQL> INSERT INTO Pokemon(POKEMON_ID, POKEMON_NAME, EXPERIENCE, LV, HEIGHT, WEIGHT, LOCATION)
+  2  VALUES(40, NULL, 200, 4, 0.3, 4.0, 'City');
+INSERT INTO Pokemon(POKEMON_ID, POKEMON_NAME, EXPERIENCE, LV, HEIGHT, WEIGHT, LOCATION)
+            *
+ERROR at line 1:
+ORA-20001: Pokemon name cannot be null.
+ORA-06512: at "SYSTEM.BEFORE_INSERT_POKEMON", line 3
+ORA-04088: error during execution of trigger 'SYSTEM.BEFORE_INSERT_POKEMON'
+
+6 rows selected.
+
+============================================================
+TRIGGER 2 -- AFTER INSERT on Pokemon (LOG -- print new ID)
+============================================================
+SQL> CREATE OR REPLACE TRIGGER after_insert_pokemon
+  2  AFTER INSERT ON Pokemon
+  3  FOR EACH ROW
+  4  BEGIN
+  5      DBMS_OUTPUT.PUT_LINE('New Pokemon inserted with ID: ' || :NEW.POKEMON_ID);
+  6  END;
+  7  /
+
+Trigger created.
+
+SQL> SET SERVEROUTPUT ON;
+SQL> INSERT INTO Pokemon(POKEMON_ID, POKEMON_NAME, EXPERIENCE, LV, HEIGHT, WEIGHT, LOCATION)
+  2  VALUES(52, 'Meowth', 190, 5, 0.4, 4.2, 'City');
+New Pokemon inserted with ID: 52
+
+1 row created.
+
+
+7 rows selected.
+==========================================================================
+TRIGGER 3 -- BEFORE DELETE on Trainer (IF -- block if Trainer is Lance)
+==========================================================================
+SQL> CREATE OR REPLACE TRIGGER before_delete_trainer
+  2  BEFORE DELETE ON Trainer
+  3  FOR EACH ROW
+  4  DECLARE
+  5      v_count INTEGER;
+  6  BEGIN
+  7      SELECT COUNT(*) INTO v_count
+  8      FROM Trainer
+  9      WHERE TRAINER NAME = 'Lance';
+ 10
+ 11      IF v_count > 0 THEN
+ 12          RAISE_APPLICATION_ERROR(-20002, 'Cannot delete. This trainer is the pokemon master Lance.');
+ 13      END IF;
+ 14  END;
+ 15  /
+
+Trigger created.
+
+SQL> DELETE FROM Trainer WHERE TRAINER_ID = 1;
+DELETE FROM Trainer WHERE TRAINER_ID = 1
+            *
+ERROR at line 1:
+ORA-20002: Cannot delete. Cannot delete. This trainer is the pokemon master Lance.
+ORA-06512: at "SYSTEM.BEFORE_DELETE_TRAINER", line 4
+ORA-04088: error during execution of trigger 'SYSTEM.BEFORE_DELETE_TRAINER'
+
+
+SQL> DELETE FROM Trainer WHERE TRAINER_ID = 6;
+
+1 row deleted.
+
+==================================================================
+TRIGGER 4 -- AFTER DELETE on Pokemon (LOG -- print deleted record)
+==================================================================
+
+SQL> CREATE OR REPLACE TRIGGER after_delete_pokemon
+  2  AFTER DELETE ON Pokemon
+  3  FOR EACH ROW
+  4  BEGIN
+  5      DBMS_OUTPUT.PUT_LINE('Pokemon ' || :OLD.POKEMON_NAME || ' (ID: ' || :OLD.POKEMON_ID || ') has been deleted.');
+  6  END;
+  7  /
+
+Trigger created.
+
+SQL> DELETE FROM Pokemon WHERE POKEMON_ID = 52;
+Pokemon Meowth (ID: 52) has been deleted.
+
+1 row deleted.
+
+=======================================================================
+TRIGGER 5 -- BEFORE UPDATE on Pokemon (IF -- block negative experience)
+=======================================================================
+SQL> CREATE OR REPLACE TRIGGER before_update_pokemon
+  2  BEFORE UPDATE ON Pokemon
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :NEW.EXPERIENCE < 0 THEN
+  6          RAISE_APPLICATION_ERROR(-20003, 'Experience cannot be negative.');
+  7      END IF;
+  8  END;
+  9  /
+
+Trigger created.
+
+SQL> UPDATE Pokemon SET EXPERIENCE = -50 WHERE POKEMON_ID = 25;
+UPDATE Pokemon SET EXPERIENCE = -50 WHERE POKEMON_ID = 25
+       *
+ERROR at line 1:
+ORA-20003: Experience cannot be negative.
+ORA-06512: at "SYSTEM.BEFORE_UPDATE_POKEMON", line 3
+ORA-04088: error during execution of trigger 'SYSTEM.BEFORE_UPDATE_POKEMON'
+
+
+SQL> UPDATE Pokemon SET EXPERIENCE = 350 WHERE POKEMON_ID = 25;
+
+1 row updated.
+
+================================================================
+TRIGGER 6 -- AFTER UPDATE on Trainer (LOG -- print badge change)
+================================================================
+
+SQL> CREATE OR REPLACE TRIGGER after_update_trainer
+  2  AFTER UPDATE ON Trainer
+  3  FOR EACH ROW
+  4  BEGIN
+  5      DBMS_OUTPUT.PUT_LINE('Trainer ' || :OLD.TRAINER_NAME ||
+  6                           ' badge count changed from ' || :OLD.BADGE ||
+  7                           ' to ' || :NEW.BADGE);
+  8  END;
+  9  /
+
+Trigger created.
+
+SQL> UPDATE Trainer SET BADGE = 3 WHERE TRAINER_ID = 6;
+Trainer Ash badge count changed from 2 to 3
+
+1 row updated.
+
+====================================================================
+TRIGGER 7 -- COMPOUND TRIGGER on Type (BEFORE INSERT + AFTER DELETE)
+====================================================================
+SQL> CREATE OR REPLACE TRIGGER compound_trigger_type
+  2  FOR INSERT OR DELETE ON Type
+  3  COMPOUND TRIGGER
+  4
+  5      v_action_count NUMBER := 1;
+  6
+  7      BEFORE EACH ROW IS
+  8      BEGIN
+  9          IF INSERTING THEN
+ 10              DBMS_OUTPUT.PUT_LINE('Preparing to insert Type entry for Pokemon ID: ' || :NEW.POKEMON_ID);
+ 11          END IF;
+ 12      END BEFORE EACH ROW;
+ 13
+ 14      AFTER EACH ROW IS
+ 15      BEGIN
+ 16          IF DELETING THEN
+ 17              DBMS_OUTPUT.PUT_LINE('Type entry for Pokemon ID: ' || :OLD.POKEMON_ID || ' has been deleted.');
+ 18          END IF;
+ 19      END AFTER EACH ROW;
+ 20
+ 21  END compound_trigger_type;
+ 22  /
+
+Trigger created.
+
+SQL> INSERT INTO Type(POKEMON_ID, TYPE1, TYPE2)
+  2  VALUES(39, 'normal', NULL);
+Preparing to insert Type entry for Pokemon ID: 39
+
+1 row created.
+
+SQL> DELETE FROM Type WHERE POKEMON_ID = 39;
+Type entry for Pokemon ID: 39 has been deleted.
+
+1 row deleted.
+
+============================================================================
+TRIGGER 8 -- STATEMENT-LEVEL on Region (IF-ELSE -- fires ONCE per statement)
+============================================================================
+SQL> CREATE OR REPLACE TRIGGER statement_trigger_region
+  2  BEFORE INSERT OR DELETE ON Region
+  3  DECLARE
+  4      v_msg VARCHAR2(200);
+  5  BEGIN
+  6      IF INSERTING THEN
+  7          v_msg := 'A new region is being inserted into the Region table.';
+  8      END IF;
+  9
+ 10      IF DELETING THEN
+ 11          v_msg := 'A region is being deleted from the Region table.';
+ 12      END IF;
+ 13
+ 14      DBMS_OUTPUT.PUT_LINE(v_msg);
+ 15  END statement_trigger_region;
+ 16  /
+
+Trigger created.
+
+SQL> INSERT INTO Region(REGION_NAME, GAME_NAME, GENERATION, ROUTE, LEAGUE_CITY)
+  2  VALUES('Kitakami', 'pokemon scarlet', 9, 'no routes', 'mossui town');
+A new region is being inserted into the Region table.
+
+1 row created.
+
+SQL> DELETE FROM Region WHERE GENERATION = 9;
+A region is being deleted from the Region table.
+
+2 rows deleted.
+
+=================================================================
+TRIGGER 9 -- AFTER DELETE on Trainer -> Archive to DeletedTrainer
+=================================================================
+SQL> CREATE TABLE DeletedTrainer (
+  2      TRAINER_ID    NUMBER,
+  3      TRAINER_NAME  VARCHAR2(30),
+  4      BADGE         NUMBER,
+  5      AGE           NUMBER,
+  6      GENDER        VARCHAR2(20),
+  7      MONEY         FLOAT(126),
+  8      POKEMON_ID    NUMBER,
+  9      DELETED_ON    DATE
+ 10  );
+
+Table created.
+
+SQL>
+SQL> CREATE OR REPLACE TRIGGER trg_archive_deleted_trainer
+  2  AFTER DELETE ON Trainer
+  3  FOR EACH ROW
+  4  BEGIN
+  5      INSERT INTO DeletedTrainer(
+  6          TRAINER_ID, TRAINER_NAME, BADGE, AGE,
+  7          GENDER, MONEY, POKEMON_ID, DELETED_ON
+  8      )
+  9      VALUES(
+ 10          :OLD.TRAINER_ID, :OLD.TRAINER_NAME, :OLD.BADGE, :OLD.AGE,
+ 11          :OLD.GENDER, :OLD.MONEY, :OLD.POKEMON_ID, SYSDATE
+ 12      );
+ 13  END;
+ 14  /
+
+Trigger created.
+
+SQL> SELECT * FROM Trainer WHERE TRAINER_ID = 3;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         3 Brock                                   1         17
+Male                       3500 10-OCT-07                     1          4
+Lance
+
+
+SQL> DELETE FROM Trainer WHERE TRAINER_ID = 3;
+
+1 row deleted.
+
+SQL> SELECT * FROM DeletedTrainer;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY POKEMON_ID DELETED_ON
+-------------------- ---------- ---------- ---------
+         3 Brock                                   1         17
+Male                       3500          1 24-MAR-26
+
+========================================================================
+TRIGGER 10 -- BEFORE UPDATE OF WEIGHT on Pokemon (IF-ELSE -- auto set LV)
+=========================================================================
+SQL> CREATE OR REPLACE TRIGGER trg_update_pokemon_level
+  2  BEFORE UPDATE OF WEIGHT ON Pokemon
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :NEW.WEIGHT > 8 THEN
+  6          :NEW.LV := :NEW.LV + 2;
+  7          DBMS_OUTPUT.PUT_LINE('Heavy Pokemon detected. Level boosted by 2.');
+  8      ELSE
+  9          :NEW.LV := :NEW.LV + 1;
+ 10          DBMS_OUTPUT.PUT_LINE('Standard weight. Level boosted by 1.');
+ 11      END IF;
+ 12  END;
+ 13  /
+
+Trigger created.
+
+SQL> SELECT POKEMON_ID, POKEMON_NAME, WEIGHT, LV FROM Pokemon WHERE POKEMON_ID = 7;
+
+POKEMON_ID POKEMON_NAME             WEIGHT         LV
+---------- -------------------- ---------- ----------
+         7 Squirtle                      9          5
+
+SQL> UPDATE Pokemon SET WEIGHT = 10 WHERE POKEMON_ID = 7;
+Heavy Pokemon detected. Level boosted by 2.
+
+1 row updated.
+
+SQL> SELECT POKEMON_ID, POKEMON_NAME, WEIGHT, LV FROM Pokemon WHERE POKEMON_ID = 7;
+
+POKEMON_ID POKEMON_NAME             WEIGHT         LV
+---------- -------------------- ---------- ----------
+         7 Squirtle                     10          7
+
+SQL> UPDATE Pokemon SET WEIGHT = 6.5 WHERE POKEMON_ID = 25;
+Standard weight. Level boosted by 1.
+
+1 row updated.
+
+SQL> SELECT POKEMON_ID, POKEMON_NAME, WEIGHT, LV FROM Pokemon WHERE POKEMON_ID = 25;
+
+POKEMON_ID POKEMON_NAME             WEIGHT         LV
+---------- -------------------- ---------- ----------
+        25 Pikachu                     6.5         21
+
+=========================================================================================
+
+7A)
+===
+1.
+--
+SQL> SELECT student_id, course_id, marks
+  2  FROM enroll
+  3  WHERE course_id IN (
+  4      SELECT course_id
+  5      FROM teaches
+  6      WHERE instructor_name = 'Dr. Kumar'
+  7  );
+
+STUDENT_ID   COURSE_ID   MARKS
+------------ ------------ -------
+S101         C201         60
+S102         C201         65
+S103         C201         70
+S104         C201         75
+S105         C201         80
+
+SQL> UPDATE enroll
+  2  SET marks = marks * 1.40
+  3  WHERE course_id IN (
+  4      SELECT course_id
+  5      FROM teaches
+  6      WHERE instructor_name = 'Dr. Kumar'
+  7  );
+
+5 rows updated.
+
+SQL> SELECT student_id, course_id, marks
+  2  FROM enroll
+  3  WHERE course_id IN (
+  4      SELECT course_id
+  5      FROM teaches
+  6      WHERE instructor_name = 'Dr. Kumar'
+  7  );
+
+STUDENT_ID   COURSE_ID   MARKS
+------------ ------------ -------
+S101         C201         84
+S102         C201         91
+S103         C201         98
+S104         C201         105
+S105         C201         112
+
+2.
+--
+SQL> SELECT student_name
+  2  FROM student
+  3  WHERE student_id = (
+  4      SELECT student_id
+  5      FROM enroll
+  6      WHERE marks = (
+  7          SELECT MAX(marks)
+  8          FROM enroll
+  9          WHERE marks < (SELECT MAX(marks) FROM enroll)
+ 10      )
+ 11  );
+
+STUDENT_NAME
+--------------------
+muni
+
+SQL> SELECT marks FROM enroll ORDER BY marks DESC;
+
+MARKS
+-------
+98
+95   
+90
+85
+
+SQL> SELECT s.student_name, e.marks
+  2  FROM student s, enroll e
+  3  WHERE s.student_id = e.student_id
+  4  AND e.marks = 95;
+
+STUDENT_NAME     MARKS
+---------------- -----
+muni             95
+
+
+3.
+--
+SQL> SELECT DISTINCT c.course_name
+  2  FROM course c, enroll e
+  3  WHERE c.course_id = e.course_id
+  4  AND e.marks > (SELECT AVG(marks) FROM enroll);
+
+COURSE_NAME
+--------------------
+Database Systems
+Operating Systems
+
+SQL> SELECT AVG(marks) FROM enroll;
+
+AVG(MARKS)
+----------
+78.5
+
+SQL> SELECT c.course_name, e.marks
+  2  FROM course c, enroll e
+  3  WHERE c.course_id = e.course_id
+  4  AND e.marks > 78.5;
+
+COURSE_NAME        MARKS
+-------------------- -----
+Database Systems    90
+Operating Systems   85
+
+4.
+--
+SQL> SELECT s.student_name, s.city
+  2  FROM student s, enroll e
+  3  WHERE s.student_id = e.student_id
+  4  AND e.marks = (SELECT MAX(marks) FROM enroll);
+
+STUDENT_NAME        CITY
+-------------------- --------------------
+sankari             Chennai
+
+SQL> SELECT MAX(marks) FROM enroll;
+
+MAX(MARKS)
+----------
+98
+
+SQL> SELECT s.student_name, s.city, e.marks
+  2  FROM student s, enroll e
+  3  WHERE s.student_id = e.student_id
+  4  AND e.marks = 98;
+
+STUDENT_NAME     CITY        MARKS
+---------------- ------------ -----
+sankari          Chennai     98
+
+5.
+--
+SQL> CREATE OR REPLACE FUNCTION get_max_enrolled_course
+  2  RETURN VARCHAR2
+  3  IS
+  4      v_course_name VARCHAR2(50);
+  5  BEGIN
+  6      SELECT course_name INTO v_course_name
+  7      FROM course
+  8      WHERE course_id = (
+  9          SELECT course_id
+ 10          FROM enroll
+ 11          GROUP BY course_id
+ 12          ORDER BY COUNT(*) DESC
+ 13          FETCH FIRST 1 ROW ONLY
+ 14      );
+ 15
+ 16      RETURN v_course_name;
+ 17
+ 18  EXCEPTION
+ 19      WHEN NO_DATA_FOUND THEN
+ 20          RETURN 'NOT FOUND';
+ 21  END;
+ 22  /
+
+Function created.
+
+SQL> SELECT course_id, COUNT(*) AS total_students
+  2  FROM enroll
+  3  GROUP BY course_id
+  4  ORDER BY total_students DESC;
+
+COURSE_ID   TOTAL_STUDENTS
+------------ ---------------
+C201         5
+C202         3
+
+SQL> SELECT course_name
+  2  FROM course
+  3  WHERE course_id = 'C201';
+
+COURSE_NAME
+--------------------
+Database Systems
+
+SQL> SELECT get_max_enrolled_course FROM dual;
+
+GET_MAX_ENROLLED_COURSE
+----------------------------
+Database Systems
+
+
+7b.
+===
+A. Staff in Building A, Block ‘C’ (case-insensitive)
+----------------------------------------------------
+SQL> SELECT staff_name
+  2  FROM staff
+  3  WHERE UPPER(building) = 'A'
+  4  AND UPPER(block) = 'C';
+
+STAFF_NAME
+--------------------
+Yogesh
+Kannan
+
+SQL> SELECT staff_name, building, block FROM staff;
+
+STAFF_NAME   BUILDING   BLOCK
+------------ ----------- -------
+Yogesh       A           C
+Kannan       a           c
+Arun         B           A
+
+B. Books (Database/Data Mining) + Members with fine > 500
+---------------------------------------------------------
+SQL> SELECT m.member_name, b.book_title, l.amount
+  2  FROM members m, books b, borrow br, line l
+  3  WHERE m.member_id = br.member_id
+  4  AND b.book_id = br.book_id
+  5  AND m.member_id = l.member_id
+  6  AND (b.category = 'Database' OR b.category = 'Data Mining')
+  7  AND l.amount > 500;
+
+MEMBER_NAME   BOOK_TITLE          AMOUNT
+-------------- -------------------- -------
+muni           DBMS Concepts       600
+sankari        Data Mining Intro   750
+
+SQL> SELECT category FROM books;
+
+CATEGORY
+--------------------
+Database
+Data Mining
+AI
+
+SQL> SELECT member_id, amount FROM line;
+
+MEMBER_ID   AMOUNT
+------------ -------
+M101         600
+M102         300
+M103         750
+
+C. View: Member + Book Titles
+-----------------------------
+SQL> CREATE OR REPLACE VIEW member_book_view AS
+  2  SELECT m.member_name, b.book_title
+  3  FROM members m, books b, borrow br
+  4  WHERE m.member_id = br.member_id
+  5  AND b.book_id = br.book_id;
+
+View created.
+
+SQL> SELECT * FROM member_book_view;
+
+MEMBER_NAME   BOOK_TITLE
+-------------- --------------------
+muni           DBMS Concepts
+sankari        Data Mining Intro
+
+D. Procedure to Insert Book
+----------------------------
+SQL> CREATE OR REPLACE PROCEDURE insert_book(
+  2      p_id VARCHAR2,
+  3      p_title VARCHAR2,
+  4      p_author VARCHAR2,
+  5      p_category VARCHAR2,
+  6      p_price NUMBER
+  7  )
+  8  IS
+  9  BEGIN
+ 10      INSERT INTO books
+ 11      VALUES (p_id, p_title, p_author, p_category, p_price);
+ 12  END;
+ 13  /
+
+Procedure created.
+
+SQL> EXEC insert_book('B105','AI Basics','John','AI',450);
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT * FROM books WHERE book_id = 'B105';
+
+BOOK_ID   BOOK_TITLE   AUTHOR   CATEGORY   PRICE
+--------- ------------ -------- ---------- ------
+B105      AI Basics    John     AI         450
+
+E. Index on Member Name
+-----------------------
+SQL> SELECT member_name FROM members ORDER BY member_name;
+
+MEMBER_NAME
+--------------
+muni
+sankari
+Kannan
+
+SQL> CREATE INDEX idx_member_name ON members(member_name);
+
+Index created.
+
+SQL> SELECT member_name FROM members ORDER BY member_name;
+
+MEMBER_NAME
+--------------
+muni
+sankari
+Kannan
+
+=========================================================================
+
+Write a code in PL/SQL TO create a trigger that automatically updates a 'last_modified' timestamp whenever a row in a specific table is updated.
+==================================================================================================================================================
+1)SQL> CREATE OR REPLACE TRIGGER trg_update_last_modified
+  2  BEFORE UPDATE ON employee
+  3  FOR EACH ROW
+  4  BEGIN
+  5      :NEW.last_modified := SYSDATE;
+  6  END;
+  7  /
+
+Trigger created.
+SQL>select * from employee;
+
+
+EMP_ID   EMP_NAME           EXPERIENCE
+-------- -------------------- ----------
+LAST_MODIFIED
+-----------------------------------------------------
+102      kannan                      7
+
+SQL> update staff set emp_name ='yogesh' where emp_id = 102;
+
+1 row updated.
+
+SQL>select * from staff;
+
+EMP_ID    EMP_NAME           EXPERIENCE
+--------  -------------------- ----------
+LAST_MODIFIED
+-----------------------------------------------------
+102       yogesh                    7
+17-MAR-26  11.08.50.451000 PM
+
+1-B)    Write a code in PL/SQL to create a trigger that prevents updates on a certain column during specific hours of the day.
+=============================================================================================================================6
+1)bSQL> CREATE OR REPLACE TRIGGER restrict_update
+  2  BEFORE UPDATE OF salary ON teaching_emp
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF TO_NUMBER(TO_CHAR(SYSDATE,'HH24')) < 9
+  6      OR TO_NUMBER(TO_CHAR(SYSDATE,'HH24')) > 18 THEN
+  7          RAISE_APPLICATION_ERROR(-20001,
+  8          'Updates not allowed outside working hours');
+  9      END IF;
+ 10  END;
+ 11  /
+
+Trigger created.
+
+SQL> update teaching_emp
+  2  set salary = 600000
+  3  where emp_id = 107;
+ERROR at line 1:
+ORA-20001: Updates not allowed outside working hours
+ORA-06512: at "SYSTEM.RESTRICT_UPDATE", line 4
+ORA-04088:error during execution of trigger 'SYSTEM.RESTRICT_UPDATE'
+A)      Write a code in PL/SQL to develop a trigger that enforces referential integrity by preventing the deletion of a parent record if child records exist.
+=============================================================================================================================================================
+
+SQL> CREATE OR REPLACE TRIGGER restrict_delete
+  2  BEFORE DELETE ON class
+  3  FOR EACH ROW
+  4  DECLARE
+  5      v_count NUMBER;
+  6  BEGIN
+  7      SELECT COUNT(*)
+  8      INTO v_count
+  9      FROM employee
+ 10      WHERE emp_id = :OLD.emp_id;
+ 11
+ 12      IF v_count > 0 THEN
+ 13          RAISE_APPLICATION_ERROR(-20002,
+ 14          'Cannot delete staff inherited by some other table');
+ 15      END IF;
+ 16  END;
+ 17  /
+Trigger created.
+
+
+SQL> DELETE FROM employee
+  2  WHERE emp_id = 101;
+ERROR at line 1:
+ORA-20002: Cannot delete employee inherited by some other table.
+ORA-06512: at "SYSTEM.RESTRICT_DELETE",line 12
+ORA-04088:error during execution of trigger 'SYSTEM.RESTRICT_DELETE'
+
+B)      Write a code in PL/SQL to create a trigger that checks for duplicate values in a specific column and raises an exception if found.
+==========================================================================================================================================
+SQL> CREATE OR REPLACE TRIGGER restrict_insert
+  2  BEFORE INSERT ON student
+  3  FOR EACH ROW
+  4  DECLARE
+  5      v_count NUMBER;
+  6  BEGIN
+  7      SELECT COUNT(*)
+  8      INTO v_count
+  9      FROM student
+ 10      WHERE email = :NEW.email;
+ 11
+ 12      IF v_count > 0 THEN
+ 13          RAISE_APPLICATION_ERROR(-20003,
+ 14          'Duplicate email not allowed');
+ 15      END IF;
+ 16  END;
+ 17  /
+
+
+Trigger created.
+
+SQL>select email from student where student_id=206;
+
+EMAIL
+------------------------------
+yogesh@gmail.com
+
+
+SQL> INSERT INTO student(student_id,student_name,email) VALUES(240,'rahul','rahul@gmail.com');
+
+1 row created.
+
+SQL> INSERT INTO student(student_id,student_name,email) VALUES(242,'kumar','mmed@gmail.com');
+INSERT INTO student(student_id,student_name,email) VALUES(242,'kumar','mmed@gmail.com');
+           *
+ERROR at line 1:
+ORA-20003: Duplicate email not allowed
+ORA-06512: at "SYSTEM.RESTRICT_INSERT",line 12
+ORA-04088:error during execution of trigger 'SYSTEM.RESTRICT_INSERT'
+
+SQL> CREATE OR REPLACE TRIGGER trg_validate_salary
+  2  BEFORE INSERT ON teaching_emp
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :NEW.salary < 10000 THEN
+  6          RAISE_APPLICATION_ERROR(-20005,
+  7          'Salary must be greater than 10000');
+  8      END IF;
+  9  END;
+ 10  /
+Trigger created.
+
+SQL> INSERT INTO teaching_emp VALUES(120,20000,'dsp',2);
+
+1 row created.
+
+SQL> INSERT INTO teaching_emp VALUES(121,5000,'dld',8);
+INSERT INTO teaching_emp VALUES(121,5000,'dld',8);
+        *
+ERROR at line 1:
+ORA-20005: Salary must be greater than 10000
+ORA-06512: at "TRG_VALIDATE_SALARY", line 3
+ORA-04088: error during execution of trigger 'TRG_VALIDATE_SALARY'
+
+
+SQL> CREATE OR REPLACE TRIGGER trg_check_student_age
+  2  BEFORE INSERT ON student
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :NEW.age < 0 THEN
+  6          RAISE_APPLICATION_ERROR(-20006,
+  7          'Student age cannot be negative');
+  8      END IF;
+  9  END;
+ 10  /
+Trigger created.
+
+SQL> INSERT INTO student(student_id,student_name,age)
+  2  VALUES(249,'Rahul',21);
+
+1 row created.
+
+SQL> INSERT INTO student(student_id,student_name,age) VALUES(250,'Kumar',-3);
+INSERT INTO student(student-id,student_name,age) VALUES(250,'kumar',-3);
+        *
+ERROR at line 1:
+ORA-20006: Student age cannot be negative
+ORA-06512: at "TRG_CHECK_STUDENT_AGE", line 3
+ORA-04088: error during execution iof trigger 'TRG_CHECK_STUDENT_AGE'
+
+3)A     Write a code in PL/SQL to create a trigger that validates if 2 or more subject is taught by staff if taugh then it doesnot allow more than 2 subject for a particular staff
+===================================================================================================================================================================================
+SQL> CREATE OR REPLACE TRIGGER trg_check_emp_limit
+  2  BEFORE INSERT ON teaching_emp
+  3  FOR EACH ROW
+  4  DECLARE
+  5      v_count NUMBER;
+  6  BEGIN
+  7
+  8      SELECT COUNT(*)
+  9      INTO v_count
+ 10      FROM teaching_emp
+ 11      WHERE emp_id = :NEW.emp_id;
+
+ 12
+ 13      IF v_count >= 2 THEN
+ 14         RAISE_APPLICATION_ERROR(-20021,
+ 15         'employee already has maximum 2 subjects');
+ 16      END IF;
+ 17  END;
+ 18  /
+
+Trigger created.
+
+SQL> SELECT * FROM teaching_emp;
+
+taff_id | salary | work_name | subject_id
+----------+--------+-----------+------------
+ 105      | 150000 | cad       | NULL
+ 107      | 60000  | dsa       | 403
+ 109      | 50000  | micro     | 402
+ 110      | 500000 | softskill | 401
+
+SQL> INSERT INTO teaching_staff VALUES (107, 70000, 'nw', 404);
+
+1 row created.
+
+SQL> INSERT INTO teaching_staff VALUES (107, 70000, 'dsa', 404);
+INSERT INTO teaching_staff VALUES (107, 70000, 'dsa', 404);
+        *
+ERROR at line 1:
+ORA-20006: employee already has maximum 2 subjects
+ORA-06512: at "TRG_CHECK_EMP_LIMIT", line 3
+ORA-04088: error during execution iof trigger 'TRG_CHECK_EMP_LIMIT'
