@@ -1,0 +1,781 @@
+SQL> set timing on
+
+Create a view to display trainer names and their badges.
+========================================================3
+
+SQL> SELECT trainer_name, badge
+  2  FROM Trainer;
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Lance                                   8
+Ash                                     2
+Brock                                   1
+
+Elapsed: 00:00:00.00
+SQL> CREATE VIEW trainer_badge_view AS
+  2  SELECT trainer_name, badge
+  3  FROM Trainer;
+
+View created.
+
+Elapsed: 00:00:00.01
+SQL> select * from trainer_badge_view;
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Lance                                   8
+Ash                                     2
+Brock                                   1
+
+Elapsed: 00:00:00.00
+
+Create a view to display trainer names who have exactly 2 badges
+================================================================
+
+SQL> SELECT trainer_name, badge
+  2  FROM Trainer
+  3  WHERE badge = 2;
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Ash                                     2
+
+Elapsed: 00:00:00.00
+SQL> CREATE VIEW trainer_badge AS
+  2  SELECT trainer_name, badge
+  3  FROM Trainer
+  4  WHERE badge = 2;
+
+View created.
+
+Elapsed: 00:00:00.00
+SQL> select * from trainer_badge;
+
+TRAINER_NAME                        BADGE
+------------------------------ ----------
+Ash                                     2
+
+Elapsed: 00:00:00.00
+SQL> SELECT p.pokemon_name, t.type1, t.type2
+  2  FROM Pokemon p
+  3  JOIN Type t
+  4  ON p.pokemon_id = t.pokemon_id;
+
+POKEMON_NAME         TYPE1                TYPE2
+-------------------- -------------------- --------------------
+Charmander           fire
+Squirtle             water
+Bulbasaur            grass                poison
+
+Elapsed: 00:00:00.01
+
+Create a view to display Pokémon names along with their primary and secondary types.
+====================================================================================
+
+SQL> CREATE VIEW pokemon_type_info AS
+  2  SELECT p.pokemon_name, t.type1, t.type2
+  3  FROM Pokemon p
+  4  JOIN Type t
+  5  ON p.pokemon_id = t.pokemon_id;
+
+View created.
+
+Elapsed: 00:00:00.00
+SQL> select * from pokemon_type_info;
+
+POKEMON_NAME         TYPE1                TYPE2
+-------------------- -------------------- --------------------
+Charmander           fire
+Squirtle             water
+Bulbasaur            grass                poison
+
+Elapsed: 00:00:00.00
+SQL>
+SQL> SELECT location,
+  2  COUNT(*) AS total_location
+  3  FROM Pokemon
+  4  GROUP BY location;
+
+LOCATION             TOTAL_LOCATION
+-------------------- --------------
+Forest                            2
+Mountain                          1
+Lake                              1
+City                              1
+
+Elapsed: 00:00:00.00
+
+Create a view to count the number of Pokémon available in each location
+=======================================================================
+
+SQL> CREATE VIEW location_count AS
+  2  SELECT location,
+  3  COUNT(*) AS total_location
+  4  FROM Pokemon
+  5  GROUP BY location;
+
+View created.
+
+Elapsed: 00:00:00.00
+SQL> select * from location_count;
+
+LOCATION             TOTAL_LOCATION
+-------------------- --------------
+Forest                            2
+Mountain                          1
+Lake                              1
+City                              1
+
+Elapsed: 00:00:00.00
+
+Create a view to display only those locations where more than one Pokémon is available.
+=======================================================================================
+
+SQL> SELECT location, total_location
+  2  FROM location_count
+  3  WHERE total_location > 1;
+
+LOCATION             TOTAL_LOCATION
+-------------------- --------------
+Forest                            2
+
+Elapsed: 00:00:00.00
+SQL> CREATE VIEW location_above_1 AS
+  2  SELECT location, total_location
+  3  FROM location_count
+  4  WHERE total_location > 1;
+
+View created.
+
+Elapsed: 00:00:00.00
+SQL> select * from location_above_1;
+
+LOCATION             TOTAL_LOCATION
+-------------------- --------------
+Forest                            2
+
+Elapsed: 00:00:00.00
+
+Create a view to display each trainer along with their master trainer name using self join.
+===========================================================================================
+SQL> SELECT e.trainer_name AS trainer,
+  2  m.trainer_name AS master
+  3  FROM Trainer e
+  4  LEFT JOIN Trainer m
+  5  ON e.master_id = m.trainer_id;
+
+TRAINER                        MASTER
+------------------------------ ------------------------------
+Lance                          Lance
+Ash                            Lance
+Brock                          Lance
+
+Elapsed: 00:00:00.00
+SQL> CREATE VIEW trainer_master_view AS
+  2  SELECT e.trainer_name AS trainer,
+  3  m.trainer_name AS master
+  4  FROM Trainer e
+  5  LEFT JOIN Trainer m
+  6  ON e.master_id = m.trainer_id;
+
+View created.
+
+Elapsed: 00:00:00.00
+SQL> select * from trainer_master_view;
+
+TRAINER                        MASTER
+------------------------------ ------------------------------
+Lance                          Lance
+Ash                            Lance
+Brock                          Lance
+
+Elapsed: 00:00:00.00
+
+Create a view to display trainer details including id, name, badge.
+===================================================================
+
+SQL> CREATE VIEW trainer_2 AS
+  2  SELECT trainer_id, trainer_name, badge
+  3  FROM Trainer
+  4  WHERE trainer_id = 2;
+
+View created.
+
+Elapsed: 00:00:00.00
+SQL> SELECT trainer_id, trainer_name, badge
+  2  FROM Trainer
+  3  WHERE trainer_id = 2;
+
+no rows selected
+
+Elapsed: 00:00:00.00
+SQL> INSERT INTO Trainer
+  2  (trainer_id, trainer_name, badge, gender, advt_st_on)
+  3  VALUES
+  4  (2, 'Misty', 3, 'Female', '15-AUG-15');
+
+1 row created.
+
+Elapsed: 00:00:00.00
+SQL> SELECT trainer_id, trainer_name, badge
+  2  FROM Trainer
+  3  WHERE trainer_id = 2;
+
+TRAINER_ID TRAINER_NAME                        BADGE
+---------- ------------------------------ ----------
+         2 Misty                                   3
+
+Elapsed: 00:00:00.00
+SQL> select * from trainer_2;
+
+TRAINER_ID TRAINER_NAME                        BADGE
+---------- ------------------------------ ----------
+         2 Misty                                   3
+
+Elapsed: 00:00:00.00
+
+To update the trainer who has trainer_id as 2 to chandge the name to Runa
+=========================================================================
+
+SQL> UPDATE Trainer
+  2  SET trainer_name = 'Runa'
+  3  WHERE trainer_id = 2;
+
+1 row updated.
+
+Elapsed: 00:00:00.00
+SQL> select * from trainer_2;
+
+TRAINER_ID TRAINER_NAME                        BADGE
+---------- ------------------------------ ----------
+         2 Runa                                    3
+
+Elapsed: 00:00:00.00
+
+Display the average money owned by all trainers
+===============================================
+
+SQL> SELECT AVG(money) FROM Trainer;
+
+AVG(MONEY)
+----------
+      4625
+
+Elapsed: 00:00:00.00
+
+Display the trainer details whose money is less than the average money of all trainers.
+=======================================================================================
+
+SQL> SELECT trainer_id, trainer_name, money
+  2  FROM Trainer
+  3  WHERE money < (SELECT AVG(money) FROM Trainer);
+
+TRAINER_ID TRAINER_NAME                        MONEY
+---------- ------------------------------ ----------
+         3 Brock                                3500
+         2 Runa                                    0
+
+Elapsed: 00:00:00.00
+
+SQL> INSERT INTO Trainer
+  2  (trainer_id, trainer_name, badge, gender, advt_st_on)
+  3  VALUES (2,'Ash',2,'Male','01-JAN-20');
+Elapsed: 00:00:00.01
+SQL> DROP VIEW trainer_2;
+
+View dropped.
+
+Elapsed: 00:00:00.01
+
+
+Display the details of a trainer with a specific trainer ID from the view.
+==========================================================================
+
+SQL> SELECT * FROM trainer_2 WHERE trainer_id=11;
+
+TRAINER_ID TRAINER_NAME                        BADGE GENDER
+---------- ------------------------------ ---------- --------------------
+ADVT_ST_ON
+--------------------
+        11 May                                     2 Female
+10-OCT-12
+
+Display the details of a trainer with a specific trainer ID from the Trainer table.
+===================================================================================
+
+Elapsed: 00:00:00.00
+SQL> SELECT * FROM Trainer WHERE trainer_id=11;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+        11 May                                     2         10
+Female                        0 10-OCT-12
+
+
+
+Elapsed: 00:00:00.00
+
+Delete a trainer record using the view.
+=======================================
+
+SQL> DELETE FROM trainer_2 WHERE trainer_id=11;
+
+1 row deleted.
+
+Elapsed: 00:00:00.00
+SQL> SELECT * FROM trainer_2 WHERE trainer_id=11;
+
+no rows selected
+
+Elapsed: 00:00:00.00
+SQL> SELECT * FROM Trainer WHERE trainer_id=11;
+
+no rows selected
+
+Elapsed: 00:00:00.00
+
+Create an index on the badge column of the Trainer table to improve search performance.
+=======================================================================================
+
+SQL> CREATE INDEX idx_trainer_badge
+  2  ON Trainer(badge);
+
+Index created.
+
+Elapsed: 00:00:00.01
+
+Create a unique index on the Pokémon name column to prevent duplicate Pokémon names.
+====================================================================================
+
+SQL> CREATE UNIQUE INDEX idx_unique_pokemon_name
+  2  ON Pokemon(pokemon_name);
+
+Index created.
+
+Elapsed: 00:00:00.00
+
+Create a bitmap index on the Pokémon type column.
+=================================================
+
+SQL> CREATE BITMAP INDEX idx_pokemon_type
+  2  ON Type(type1);
+
+Index created.
+
+Elapsed: 00:00:00.00
+
+Create a composite index on trainer name and money columns.
+===========================================================
+
+SQL> CREATE INDEX idx_trainer_money
+  2  ON Trainer(trainer_name, money);
+
+Index created.
+
+Elapsed: 00:00:00.00
+
+Create a function-based index on the lowercase trainer name.
+============================================================
+
+SQL> CREATE INDEX idx_lower_trainer_name
+  2  ON Trainer(LOWER(trainer_name));
+
+Index created.
+
+Elapsed: 00:00:00.01
+
+
+SQL> SELECT trainer_id, trainer_name, badge
+  2  FROM Trainer
+  3  WHERE badge = 2;
+
+TRAINER_ID TRAINER_NAME                        BADGE
+---------- ------------------------------ ----------
+         6 Ash                                     2
+
+Elapsed: 00:00:00.00
+
+Display trainer details by searching trainer name in lowercase.
+===============================================================
+
+SQL> SELECT * FROM Trainer
+  2  WHERE LOWER(trainer_name) = 'ash';
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         6 Ash                                     2         15
+Male                       5000 12-JUN-11                     1         25
+Lance
+
+
+Elapsed: 00:00:00.00
+SQL> SELECT * FROM Trainer
+  2  WHERE trainer_id = 1
+  3  AND money <= 10000;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      10000 11-JAN-00                     1          4
+Lance
+
+
+Elapsed: 00:00:00.01
+
+
+
+Elapsed: 00:00:00.00
+SQL> SELECT trainer_id, trainer_name, badge
+  2  FROM TrainerExperienceProfile;
+
+TRAINER_ID TRAINER_NAME                        BADGE
+---------- ------------------------------ ----------
+         1 Lance                                   8
+         6 Ash                                     2
+         3 Brock                                   1
+         2 Runa                                    3
+
+Elapsed: 00:00:00.00
+SQL> select * from location_count;
+
+LOCATION             TOTAL_LOCATION
+-------------------- --------------
+Forest                            2
+Mountain                          1
+Lake                              1
+City                              1
+
+Elapsed: 00:00:00.00
+SQL> update location_count set location='Grass' where location='Forest';
+update location_count set location='Grass' where location='Forest'
+       *
+ERROR at line 1:
+ORA-01732: data manipulation operation not legal on this view
+
+Elapsed: 00:00:00.00
+
+Create a view to classify trainers as Expert, Intermediate, or Junior based on their badge count.
+===========================================================================================
+SQL> SELECT
+  2  trainer_id,
+  3  trainer_name,
+  4  badge,
+  5  CASE
+  6  WHEN badge >= 7 THEN 'EXPERT'
+  7  WHEN badge >= 3 THEN 'INTERMEDIATE'
+  8  ELSE 'JUNIOR'
+  9  END AS exp_level
+ 10  FROM Trainer;
+
+TRAINER_ID TRAINER_NAME                        BADGE EXP_LEVEL
+---------- ------------------------------ ---------- ------------
+         1 Lance                                   8 EXPERT
+         6 Ash                                     2 JUNIOR
+         3 Brock                                   1 JUNIOR
+         2 Runa                                    3 INTERMEDIATE
+
+Elapsed: 00:00:00.00
+SQL> CREATE VIEW TrainerExperienceProfile AS
+  2  SELECT
+  3  trainer_id,
+  4  trainer_name,
+  5  badge,
+  6  CASE
+  7  WHEN badge >= 7 THEN 'EXPERT'
+  8  WHEN badge >= 3 THEN 'INTERMEDIATE'
+  9  ELSE 'JUNIOR'
+ 10  END AS exp_level
+ 11  FROM Trainer;
+
+View created.
+
+SQL> select * from trainer_2
+  2  ;
+
+TRAINER_ID TRAINER_NAME                        BADGE GENDER
+---------- ------------------------------ ---------- --------------------
+ADVT_ST_ON
+--------------------
+         1 Lance                                   8 Male
+11-JAN-00
+
+         6 Ash                                     2 Male
+12-JUN-11
+
+         3 Brock                                   1 Male
+10-OCT-07
+
+
+TRAINER_ID TRAINER_NAME                        BADGE GENDER
+---------- ------------------------------ ---------- --------------------
+ADVT_ST_ON
+--------------------
+         2 Runa                                    3 Female
+15-AUG-15
+
+Create a view to display trainer details including id, name, badge, gender, and adventure start date.
+==========================================================================================
+
+SQL> CREATE VIEW trainer_2 AS
+  2  SELECT trainer_id,
+  3         trainer_name,
+  4         badge,
+  5         gender,
+  6         advt_st_on
+  7  FROM Trainer;
+
+View created.
+
+Elapsed: 00:00:00.00
+
+Insert a new trainer record into the trainer view.
+==================================================
+
+SQL> INSERT INTO trainer_2
+  2  VALUES (11,'May',2,'Female','10-OCT-12');
+
+1 row created.
+
+Elapsed: 00:00:00.00
+
+Elapsed: 00:00:00.01
+
+Update a trainer record in the trainer view.
+============================================
+
+SQL> update trainer_2 set trainer_name='Dawn' where trainer_name='Runa';
+
+1 row updated.
+
+Elapsed: 00:00:00.00
+SQL> select * from trainer_2;
+
+TRAINER_ID TRAINER_NAME                        BADGE GENDER
+---------- ------------------------------ ---------- --------------------
+ADVT_ST_ON
+--------------------
+         1 Lance                                   8 Male
+11-JAN-00
+
+         6 Ash                                     2 Male
+12-JUN-11
+
+         3 Brock                                   1 Male
+10-OCT-07
+
+
+TRAINER_ID TRAINER_NAME                        BADGE GENDER
+---------- ------------------------------ ---------- --------------------
+ADVT_ST_ON
+--------------------
+         2 Dawn                                    3 Female
+15-AUG-15
+
+
+Elapsed: 00:00:00.00
+
+Delete a trainer record in a trainer view.
+==========================================
+
+SQL> delete from trainer_2 where trainer_name='Runa';
+
+0 rows deleted.
+
+Elapsed: 00:00:00.01
+SQL> delete from trainer_2 where trainer_name='Dawn';
+
+1 row deleted.
+
+Elapsed: 00:00:00.01
+SQL> select * from trainer_2;
+
+TRAINER_ID TRAINER_NAME                        BADGE GENDER
+---------- ------------------------------ ---------- --------------------
+ADVT_ST_ON
+--------------------
+         1 Lance                                   8 Male
+11-JAN-00
+
+         6 Ash                                     2 Male
+12-JUN-11
+
+         3 Brock                                   1 Male
+10-OCT-07
+
+
+Elapsed: 00:00:00.00
+SQL> select trainer_name from Trainer;
+
+TRAINER_NAME
+------------------------------
+Ash
+Brock
+Lance
+
+Elapsed: 00:00:00.00
+
+creation of index with function lower.
+======================================
+
+SQL> select * from type;
+
+POKEMON_ID TYPE1                TYPE2
+---------- -------------------- --------------------
+         4 fire
+         7 water
+         1 grass                poison
+
+Elapsed: 00:00:00.00
+using rownum ,row ,count ,orderby in the view.
+==============================================
+SQL> select * from TrainerExperienceProfile where rownum<=2;
+
+TRAINER_ID TRAINER_NAME                        BADGE EXP_LEVEL
+---------- ------------------------------ ---------- ------------
+         1 Lance                                   8 EXPERT
+         6 Ash                                     2 JUNIOR
+
+Elapsed: 00:00:00.00
+SQL> select * from TrainerExperienceProfile fetch first 2 rows only;
+
+TRAINER_ID TRAINER_NAME                        BADGE EXP_LEVEL
+---------- ------------------------------ ---------- ------------
+         1 Lance                                   8 EXPERT
+         6 Ash                                     2 JUNIOR
+
+Elapsed: 00:00:00.01
+SQL> select * from TrainerExperienceProfile order by badge desc fetch first 2 row only;
+
+TRAINER_ID TRAINER_NAME                        BADGE EXP_LEVEL
+---------- ------------------------------ ---------- ------------
+         1 Lance                                   8 EXPERT
+         6 Ash                                     2 JUNIOR
+
+Elapsed: 00:00:00.01
+SQL> select count(*) from TrainerExperienceProfile;
+
+  COUNT(*)
+----------
+         3
+
+Elapsed: 00:00:00.00
+ QL> select count(*) from TrainerExperienceProfile where exp_level='JUNIOR';
+
+  COUNT(*)
+----------
+         2
+
+SQL> INSERT INTO trainer_2
+  2  VALUES (11,'May',2,'Female','10-OCT-12');
+
+1 row created.
+
+Elapsed: 00:00:00.00
+
+Delete trainer using when.
+==========================
+
+SQL> delete from Trainer
+  2  where case
+  3  when trainer_name='May' then 1
+  4  end=1;
+
+1 row deleted.
+Elapsed: 00:00:00.00
+
+SQL> select * from Trainer;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      10000 11-JAN-00                     1          4
+Lance
+
+         6 Ash                                     2         15
+Male                       5000 12-JUN-11                     1         25
+Lance
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+
+         3 Brock                                   1         17
+Male                       3500 10-OCT-07                     1          4
+Lance
+
+Elapsed: 00:00:00.00
+
+SQL> INSERT INTO trainer_2
+  2  VALUES (11,'May',2,'Female','10-OCT-12');
+
+1 row created.
+Elapsed: 00:00:00.00
+
+Update Trainer using when.
+==========================
+
+SQL> update Trainer set trainer_name='Dawn'
+  2  where case
+  3  when trainer_name='May' then 1
+  4  end=1;
+
+1 row updated.
+Elapsed: 00:00:00.00
+
+SQL> select * from Trainer;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      10000 11-JAN-00                     1          4
+Lance
+
+         6 Ash                                     2         15
+Male                       5000 12-JUN-11                     1         25
+Lance
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+
+         3 Brock                                   1         17
+Male                       3500 10-OCT-07                     1          4
+Lance
+
+        11 Dawn                                    2         10
+Female                        0 10-OCT-12
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+Elapsed: 00:00:00.00
