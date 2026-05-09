@@ -1,0 +1,713 @@
+SQL> SET SERVEROUTPUT ON;
+
+1) Function WITHOUT parameter (Total Pokémon count)
+===================================================
+
+SQL> CREATE OR REPLACE FUNCTION get_total_pokemon
+  2  RETURN NUMBER
+  3  IS
+  4      v_count NUMBER;
+  5  BEGIN
+  6      SELECT COUNT(*) INTO v_count
+  7      FROM Pokemon;
+  8
+  9      RETURN v_count;
+ 10  EXCEPTION
+ 11      WHEN OTHERS THEN
+ 12          RETURN 0;
+ 13  END;
+ 14  /
+
+Function created.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(get_total_pokemon);
+  3  END;
+  4  /
+6
+
+PL/SQL procedure successfully completed.
+
+2) Function WITH parameter (Get Pokémon level)
+==============================================
+
+SQL> CREATE OR REPLACE FUNCTION get_pokemon_level(p_id IN NUMBER)
+  2  RETURN NUMBER
+  3  IS
+  4      v_level NUMBER;
+  5  BEGIN
+  6      SELECT lv INTO v_level
+  7      FROM Pokemon
+  8      WHERE pokemon_id = p_id;
+  9
+ 10      RETURN v_level;
+ 11  EXCEPTION
+ 12      WHEN NO_DATA_FOUND THEN
+ 13          RETURN 0;
+ 14      WHEN OTHERS THEN
+ 15          RETURN NULL;
+ 16  END;
+ 17  /
+
+Function created.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(get_pokemon_level(25));
+  3  END;
+  4  /
+21
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(get_pokemon_level(250));
+  3  END;
+  4  /
+0
+
+PL/SQL procedure successfully completed.
+
+3) Function with MULTIPLE parameters
+(Get number of Pokémon above certain level in a location)
+=========================================================
+
+SQL> CREATE OR REPLACE FUNCTION get_pokemon_by_location (
+  2      p_location IN VARCHAR2,
+  3      p_level IN NUMBER
+  4  )
+  5  RETURN NUMBER
+  6  IS
+  7      v_count NUMBER;
+  8  BEGIN
+  9      SELECT COUNT(*) INTO v_count
+ 10      FROM Pokemon
+ 11      WHERE location = p_location AND lv > p_level;
+ 12
+ 13      RETURN v_count;
+ 14  END;
+ 15  /
+
+Function created.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(get_pokemon_by_location('Forest', 4));
+  3  END;
+  4  /
+3
+
+PL/SQL procedure successfully completed.
+
+4) Function returning RECORD (Trainer details)
+==============================================
+
+SQL> CREATE OR REPLACE FUNCTION get_trainer_record (
+  2      p_id IN NUMBER
+  3  )
+  4  RETURN Trainer%ROWTYPE
+  5  IS
+  6      v_trainer Trainer%ROWTYPE;
+  7  BEGIN
+  8      SELECT * INTO v_trainer
+  9      FROM Trainer
+ 10      WHERE trainer_id = p_id;
+ 11
+ 12      RETURN v_trainer;
+ 13  EXCEPTION
+ 14      WHEN NO_DATA_FOUND THEN
+ 15          RETURN NULL;
+ 16      WHEN OTHERS THEN
+ 17          RETURN NULL;
+ 18  END;
+ 19  /
+
+Function created.
+
+SQL> DECLARE
+  2      v_trainer Trainer%ROWTYPE;
+  3  BEGIN
+  4      v_trainer := get_trainer_record(1);
+  5
+  6      DBMS_OUTPUT.PUT_LINE(v_trainer.trainer_name);
+  7      DBMS_OUTPUT.PUT_LINE(v_trainer.age);
+  8  END;
+  9  /
+Lance
+25
+
+PL/SQL procedure successfully completed.
+
+5) Function returning REF CURSOR (All Pokémon)
+==============================================
+
+SQL> CREATE OR REPLACE FUNCTION get_pokemon_cursor
+  2  RETURN SYS_REFCURSOR
+  3  IS
+  4      v_cursor SYS_REFCURSOR;
+  5  BEGIN
+  6      OPEN v_cursor FOR
+  7          SELECT * FROM Pokemon;
+  8
+  9      RETURN v_cursor;
+ 10  END;
+ 11  /
+
+Function created.
+
+SQL> DECLARE
+  2      v_cursor SYS_REFCURSOR;
+  3      v_id NUMBER;
+  4      v_name VARCHAR2(20);
+  5      v_exp NUMBER;
+  6      v_lv NUMBER;
+  7      v_h FLOAT;
+  8      v_w FLOAT;
+  9      v_loc VARCHAR2(20);
+ 10  BEGIN
+ 11      v_cursor := get_pokemon_cursor;
+ 12
+ 13      LOOP
+ 14          FETCH v_cursor INTO v_id, v_name, v_exp, v_lv, v_h, v_w, v_loc;
+ 15          EXIT WHEN v_cursor%NOTFOUND;
+ 16
+ 17          DBMS_OUTPUT.PUT_LINE(v_name || ' - ' || v_lv);
+ 18      END LOOP;
+ 19
+ 20      CLOSE v_cursor;
+ 21  END;
+ 22  /
+Pikachu - 21
+Bulbasaur - 6
+Charmander - 6
+Squirtle - 7
+Eevee - 5
+Jigglypuff - 5
+
+PL/SQL procedure successfully completed.
+
+6)Recursive Function — Calculate Factorial
+==========================================
+
+SQL> CREATE OR REPLACE FUNCTION get_factorial(n IN NUMBER)
+  2      RETURN NUMBER
+  3  IS
+  4  BEGIN
+  5      IF n <= 1 THEN
+  6          RETURN 1;
+  7      ELSE
+  8          RETURN n * get_factorial(n - 1);
+  9      END IF;
+ 10  END get_factorial;
+ 11  /
+
+Function created.
+
+
+SQL> SELECT get_factorial(6) FROM DUAL;
+
+GET_FACTORIAL(5)
+----------------
+             720
+
+7)String Manipulation — Reverse a String
+=========================================
+
+SQL> CREATE OR REPLACE FUNCTION reverse_string(p_str IN VARCHAR2)
+  2      RETURN VARCHAR2
+  3  IS
+  4      v_rev VARCHAR2(4000);
+  5  BEGIN
+  6      FOR i IN REVERSE 1..LENGTH(p_str) LOOP
+  7          v_rev := v_rev || SUBSTR(p_str, i, 1);
+  8      END LOOP;
+  9      RETURN v_rev;
+ 10  END reverse_string;
+ 11  /
+
+Function created.
+
+
+SQL> SELECT POKEMON_NAME FROM POKEMON WHERE POKEMON_ID = 25;
+
+POKEMON_NAME
+-------------------------
+Pikachu
+
+SQL> SELECT reverse_string(POKEMON_NAME) FROM POKEMON WHERE POKEMON_ID = 25;
+
+REVERSE_STRING(POKEMON_NAME)
+--------------------------------------------------------------------------------
+uhcakiP
+
+8)Date Logic — Calculate Years of Service
+=========================================
+
+SQL> CREATE OR REPLACE FUNCTION get_years_experience(t_st_date IN DATE)
+  2      RETURN NUMBER
+  3  IS
+  4  BEGIN
+  5      RETURN FLOOR(MONTHS_BETWEEN(SYSDATE, t_st_date) / 12);
+  6  END get_years_experience;
+  7  /
+
+Function created.
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      10000 11-JAN-00                     1          4
+Lance
+
+SQL> SELECT get_years_experience(advt_st_on) FROM TRAINER WHERE TRAINER_ID = 1;
+
+GET_YEARS_SERVICE(DATE_OF_JOIN)
+-------------------------------
+                             26
+
+9) Check if google account is Valid  ,returning Boolean
+=======================================================
+
+SQL> CREATE OR REPLACE FUNCTION is_valid_email(p_email IN VARCHAR2)
+  2      RETURN NUMBER
+  3  IS
+  4  BEGIN
+  5      IF p_email LIKE '%@gmail.com' THEN
+  6          RETURN 1;
+  7      ELSE
+  8          RETURN 0;
+  9      END IF;
+ 10  END is_valid_email;
+ 11  /
+
+Function created.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(is_valid_email('yogesh@gmail.com'));
+  3  END;
+  4  /
+1
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(is_valid_email('yogesh@mepcoeng.ac.in'));
+  3  END;
+  4  /
+0
+
+10)Conditional Formatting — Get Performance Rating
+===================================================
+
+SQL> CREATE OR REPLACE FUNCTION get_age_text(p_score IN NUMBER)
+  2      RETURN VARCHAR2
+  3  IS
+  4  BEGIN
+  5      RETURN CASE
+  6          WHEN p_age <= 0 THEN 'INVALID AGE'
+  7          WHEN p_age >= 18 THEN 'MAJOR'
+  8          ELSE 'MINOR'
+  9      END;
+ 10  END get_age_text;
+ 11  /
+
+Function created.
+
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(get_age_text(18));
+  3  END;
+  4  /
+MAJOR
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(get_rating_text(10));
+  3  END;
+  4  /
+MINOR
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  2      DBMS_OUTPUT.PUT_LINE(get_rating_text(0));
+  3  END;
+  4  /
+INVALID AGE
+
+
+11) Simple Procedure (Insert Pokémon)
+====================================
+
+SQL> CREATE OR REPLACE PROCEDURE insert_pokemon
+  2  IS
+  3  BEGIN
+  4      INSERT INTO Pokemon
+  5      VALUES (999, 'Testmon', 100, 1, 0.5, 5, 'Lab');
+  6
+  7      COMMIT;
+  8  END;
+  9  /
+
+Procedure created.
+
+SQL> EXEC insert_pokemon;
+New Pokemon inserted with ID: 999
+
+PL/SQL procedure successfully completed.
+
+12) Procedure with IN parameters (Insert Trainer)
+================================================
+
+SQL> CREATE OR REPLACE PROCEDURE add_trainer (
+  2      p_id NUMBER,
+  3      p_name VARCHAR2,
+  4      p_age NUMBER
+  5  )
+  6  IS
+  7  BEGIN
+  8      INSERT INTO Trainer (trainer_id, trainer_name, age, gender, advt_st_on)
+  9      VALUES (p_id, p_name, p_age, 'Male', SYSDATE);
+ 10
+ 11      COMMIT;
+ 12  END;
+ 13  /
+
+Procedure created.
+
+SQL> EXEC add_trainer(10, 'Red', 18);
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from trainer where trainer_id=10;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+        10 Red                                     0         18
+Male                          0 29-MAR-26
+
+13) Procedure with OUT parameter (Get Trainer Money)
+===================================================
+
+SQL> CREATE OR REPLACE PROCEDURE get_trainer_money (
+  2      p_id IN NUMBER,
+  3      p_money OUT FLOAT
+  4  )
+  5  IS
+  6  BEGIN
+  7      SELECT money INTO p_money
+  8      FROM Trainer
+  9      WHERE trainer_id = p_id;
+ 10  END;
+ 11  /
+
+Procedure created.
+
+SQL> DECLARE
+  2      v_money FLOAT;
+  3  BEGIN
+  4      get_trainer_money(1, v_money);
+  5      DBMS_OUTPUT.PUT_LINE(v_money);
+  6  END;
+  7  /
+10000
+
+PL/SQL procedure successfully completed.
+
+14) Procedure with IN OUT parameter (Update Pokémon EXP)
+=======================================================
+
+SQL> CREATE OR REPLACE PROCEDURE update_pokemon_exp (
+  2      p_id IN NUMBER,
+  3      p_exp IN OUT NUMBER
+  4  )
+  5  IS
+  6  BEGIN
+  7      UPDATE Pokemon
+  8      SET experience = experience + p_exp
+  9      WHERE pokemon_id = p_id;
+ 10
+ 11      SELECT experience INTO p_exp
+ 12      FROM Pokemon
+ 13      WHERE pokemon_id = p_id;
+ 14  END;
+ 15  /
+
+Procedure created.
+
+SQL> DECLARE
+  2      v_exp NUMBER := 50;
+  3  BEGIN
+  4      update_pokemon_exp(25, v_exp);
+  5      DBMS_OUTPUT.PUT_LINE('Updated EXP: ' || v_exp);
+  6  END;
+  7  /
+Updated EXP: 400
+
+PL/SQL procedure successfully completed.
+
+15) Procedure returning REF CURSOR (All Trainers)
+================================================
+
+SQL> CREATE OR REPLACE PROCEDURE get_trainer_cursor (
+  2      p_cursor OUT SYS_REFCURSOR
+  3  )
+  4  IS
+  5  BEGIN
+  6      OPEN p_cursor FOR
+  7          SELECT * FROM Trainer;
+  8  END;
+  9  /
+
+Procedure created.
+
+SQL> DECLARE
+  2      v_cursor SYS_REFCURSOR;
+  3
+  4      v_id NUMBER;
+  5      v_name VARCHAR2(30);
+  6      v_badge NUMBER;
+  7      v_age NUMBER;
+  8      v_gender VARCHAR2(20);
+  9      v_money FLOAT;
+ 10      v_advt VARCHAR2(20);
+ 11      v_master_id NUMBER;
+ 12      v_pokemon_id NUMBER;
+ 13      v_master_name VARCHAR2(25);
+ 14
+ 15  BEGIN
+ 16      get_trainer_cursor(v_cursor);
+ 17
+ 18      LOOP
+ 19          FETCH v_cursor INTO
+ 20              v_id, v_name, v_badge, v_age, v_gender,
+ 21              v_money, v_advt, v_master_id, v_pokemon_id, v_master_name;
+ 22
+ 23          EXIT WHEN v_cursor%NOTFOUND;
+ 24
+ 25          DBMS_OUTPUT.PUT_LINE(v_name);
+ 26      END LOOP;
+ 27
+ 28      CLOSE v_cursor;
+ 29  END;
+ 30  /
+Lance
+Ash
+May
+Brock
+Red
+
+PL/SQL procedure successfully completed.
+
+16) Procedure with Exception Handling
+====================================
+
+SQL> CREATE OR REPLACE PROCEDURE insert_region_safe (
+  2      p_name VARCHAR2,
+  3      p_game VARCHAR2
+  4  )
+  5  IS
+  6  BEGIN
+  7      INSERT INTO Region(region_name, game_name, generation, route, league_city)
+  8      VALUES (p_name, p_game, 1, '1-10', 'Test City');
+  9
+ 10      COMMIT;
+ 11
+ 12  EXCEPTION
+ 13      WHEN DUP_VAL_ON_INDEX THEN
+ 14          DBMS_OUTPUT.PUT_LINE('Duplicate Region!');
+ 15      WHEN OTHERS THEN
+ 16          DBMS_OUTPUT.PUT_LINE(SQLERRM);
+ 17  END;
+ 18  /
+
+Procedure created.
+
+SQL> EXEC insert_region_safe('kanto','red');
+a Pokemon type data is inerted in table type.
+A new region is being inserted into the Region table.
+Duplicate Region!
+
+PL/SQL procedure successfully completed.
+
+17) Bulk Update Procedure — money Raise
+=======================================
+
+SQL>  CREATE OR REPLACE PROCEDURE apply_money_raise(p_percent IN NUMBER)
+  2     IS
+  3     BEGIN
+  4         UPDATE Trainer SET money = money + (money * (p_percent/100));
+  5         DBMS_OUTPUT.PUT_LINE( ' Trainer received a raise');
+  6         COMMIT;
+  7     END apply_money_raise;
+  8     /
+
+Procedure created.
+
+SQL> select money from Trainer;
+
+     MONEY
+----------
+      6050
+      4235
+     12100
+         0
+         0
+
+SQL> EXEC apply_money_raise(10);
+Trainer Lance badge count changed from 8 to 8
+Trainer Ash badge count changed from 3 to 3
+Trainer May badge count changed from 4 to 4
+Trainer Brock badge count changed from 1 to 1
+Trainer Red badge count changed from 0 to 0
+Trainer received a raise
+
+PL/SQL procedure successfully completed.
+
+SQL> select money from Trainer;
+
+     MONEY
+----------
+      6655
+    4658.5
+     13310
+         0
+         0
+
+18)Procedure with Default Parameters — Add TYPE
+================================================
+
+SQL> CREATE OR REPLACE PROCEDURE add_type(
+  2   p_id IN NUMBER,
+  3   p_t1  IN VARCHAR2 ,
+  4  p_t2  IN VARCHAR2 DEFAULT NULL
+  5  )
+  6  IS
+  7  BEGIN
+  8   INSERT INTO TYPE (pokemon_id, type1,type2) VALUES (p_id,p_t1,p_t2);
+  9   COMMIT;
+ 10   END add_type;
+ 11   /
+
+Procedure created.
+
+SQL> EXEC add_type(39,’psychic’,’fairy’);
+Preparing to insert Type entry for Pokemon ID: 39
+
+PL/SQL procedure successfully completed.
+
+SQL> EXEC add_type(133, 'normal');
+Preparing to insert Type entry for Pokemon ID: 133
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from type where pokemon_id in (39,133);
+
+POKEMON_ID TYPE1                TYPE2
+---------- -------------------- --------------------
+       133 normal
+        39 psychic              fairy
+
+19)Procedure using %TYPE — Fetch Name by ID
+===========================================
+
+SQL>  CREATE OR REPLACE PROCEDURE get_tr_name(
+  2       p_id    IN  trainer.trainer_id%TYPE,
+  3       p_name OUT trainer.trainer_name%TYPE
+  4   ) IS
+  5   BEGIN
+  6       SELECT trainer_name INTO p_name FROM TRAINER WHERE TRAINER_ID = p_id;
+  7   EXCEPTION
+  8       WHEN NO_DATA_FOUND THEN
+  9           p_name:= 'no_name';
+ 10   END get_tr_name;
+ 11   /
+
+Procedure created.
+
+SQL> DECLARE
+  2       v_name Trainer.trainer_name%TYPE;
+  3   BEGIN
+  4       get_tr_name(1, v_name);
+  5       DBMS_OUTPUT.PUT_LINE('NAME: ' || v_name);
+  6   END;
+  7   /
+NAME: Lance
+
+PL/SQL procedure successfully completed.
+
+SQL>  DECLARE
+  2       v_name Trainer.trainer_name%TYPE;
+  3   BEGIN
+  4       get_tr_name(100, v_name);
+  5       DBMS_OUTPUT.PUT_LINE('NAME: ' || v_name);
+  6   END;
+  7   /
+NAME: no_name
+
+PL/SQL procedure successfully completed.
+
+20)Conditional Deletion — only delete the trainer if he is not a master
+=======================================================================
+
+SQL>  CREATE OR REPLACE PROCEDURE delete_not_master(p_id IN NUMBER)
+  2   IS
+  3   BEGIN
+  4       DELETE FROM trainer
+  5       WHERE trainer_id= p_id AND master_id <> p_id;
+  6       COMMIT;
+  7    END delete_not_master;
+  8   /
+
+Procedure created.
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+        10 Red                                     0         18
+Male                          0 29-MAR-26                     1
+Lance
+
+SQL> EXEC delete_not_master(10);
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from trainer where trainer_id=10;
+
+no rows selected
+
+SQL> select * from trainer where trainer_id=1;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      13310 11-JAN-00                     1          4
+Lance
+
+SQL> EXEC delete_not_master(1);
+
+PL/SQL procedure successfully completed.
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      13310 11-JAN-00                     1          4
+Lance
