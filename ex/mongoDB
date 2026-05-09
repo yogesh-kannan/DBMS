@@ -1,0 +1,106 @@
+create a table pokemon with attributes pokemon_id,pokemon_name,height,weight,location
+
+db.createCollection("pokemon")
+
+insert 1,bulbasaur,1.5,20
+
+db.pokemon.insertOne({
+  pokemon_id: 1,
+  pokemon_name: "bulbasaur",
+  height: 1.5,
+  weight: 20
+})
+
+insert 2,ivisaur,3.8,30;3,venusaur,10.4,300;4,charmander,1.5,20 "dont insert one by one insert all at the time
+
+db.pokemon.insertMany([
+  {
+    pokemon_id: 2,
+    pokemon_name: "ivisaur",
+    height: 3.8,
+    weight: 30
+  },
+  {
+    pokemon_id: 3,
+    pokemon_name: "venusaur",
+    height: 10.4,
+    weight: 300
+  },
+  {
+    pokemon_id: 4,
+    pokemon_name: "charmander",
+    height: 1.5,
+    weight: 20
+  }
+])
+
+delete charmander
+
+db.pokemon.deleteOne({ pokemon_name: "charmander" })
+
+update weight by 1
+
+db.pokemon.updateMany(
+  {},
+  { $inc: { weight: 1 } }
+)
+
+update weight for ivisaur to 90
+
+db.pokemon.updateOne(
+  { pokemon_name: "ivisaur" },
+  { $set: { weight: 90 } }
+)
+
+rename pokemon_id to id
+
+db.pokemon.updateMany(
+  {},
+  { $rename: { "pokemon_id": "id" } }
+)
+
+order by acending order by id
+
+db.pokemon.find().sort({ id: 1 })
+
+order by decending order by id
+
+db.pokemon.find().sort({ id: -1 })
+
+group by name ,id ,weight
+
+db.pokemon.aggregate([
+  {
+    $group: {
+      _id: {
+        name: "$name",
+        id: "$id",
+        weight: "$weight"
+      }
+    }
+  }
+])
+
+select pokemon weight=90
+
+db.pokemon.find({ weight: 90 })
+
+select pokemon weight>90
+
+db.pokemon.find({ weight: { $gt: 90 } })
+
+select pokemon weight<90
+
+db.pokemon.find({ weight: { $lt: 90 } })
+
+select pokemon weight!=90
+
+db.pokemon.find({ weight: { $ne: 90 } })
+
+select pokemon weight<=90
+
+db.pokemon.find({ weight: { $lte: 90 } })
+
+select pokemon weight>=90
+
+db.pokemon.find({ weight: { $gte: 90 } })
