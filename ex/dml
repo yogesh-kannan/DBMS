@@ -1,0 +1,1398 @@
+SQL> INSERT INTO pokemon VALUES (1, 'Bulbasaur', 64, 5, 0.7, 6.9, 'Seed Pokemon'); 
+1 row created. 
+SQL> INSERT INTO pokemon (pokemon_id,pokemon_name,experience,lv,height,weight,species) VALUES (2, 'Ivysaur', 142, 16, 1.0, 13.0, 'Seed 
+Pokemon'); 
+1 row created. 
+SQL> insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values 
+(102,'ash',5,19,'Male',12000,'11/09/2018',101,4); 
+insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values 
+(102,'ash',5,19,'Male',12000,'11/09/2018',101,4) 
+* 
+ERROR at line 1: 
+ORA-00001: unique constraint (YOGESH.SYS_C008235) violated 
+SQL> insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values (103,'ash',5,19,'Male',
+12000,'11/09/2018',101,4); 
+insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values (103,'ash',5,19,'Male',
+12000,'11/09/2018',101,4) 
+* 
+ERROR at line 1: 
+ORA-02290: check constraint (YOGESH.C1_CK) violated 
+SQL> insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values 
+(101,'soorya',5,19,'Male',12000,'11/09/2018',1000,3); 
+insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values 
+(101,'soorya',5,19,'Male',12000,'11/09/2018',1000,3) 
+ERROR at line 1: 
+ORA-02291: integrity constraint (YOGESH.C1) violated - parent key not found 
+SQL> delete from pokemon where species='Seed Pokemon'; 
+delete from pokemon where species='Seed Pokemon' 
+ERROR at line 1: 
+ORA-02292: integrity constraint (YOGESH.C1) violated - child record found 
+SQL> INSERT ALL 
+2    
+3    
+INTO POKEMON (POKEMON_ID, POKEMON_NAME, EXPERIENCE, LV, HEIGHT, WEIGHT, SPECIES) 
+VALUES (5, 'Charmeleon', 142, 16, 1.1, 19.0, 'Flame Pokemon') 
+4   INTO POKEMON (POKEMON_ID, POKEMON_NAME, EXPERIENCE, LV, HEIGHT, WEIGHT, SPECIES) 
+5    
+VALUES (6, 'Charizard', 240, 36, 1.7, 90.5, 'Flame Pokemon') 
+6   INTO POKEMON (POKEMON_ID, POKEMON_NAME, EXPERIENCE, LV, HEIGHT, WEIGHT, SPECIES) 
+7    
+VALUES (7, 'Squirtle', 63, 5, 0.5, 9.0, 'Tiny Turtle Pokemon') 
+8  SELECT * FROM dual; 
+3 rows created. 
+SQL> select * from pokemon; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> desc trainer; 
+ Name                                      Null?    Type 
+ ----------------------------------------- -------- ---------------------------- 
+ TRAINER_ID                                NOT NULL NUMBER 
+ TRAINER_NAME                              NOT NULL VARCHAR2(20) 
+ BADGE                                              NUMBER 
+ AGE                                       NOT NULL NUMBER 
+ GENDER                                    NOT NULL VARCHAR2(20) 
+ MONEY                                              FLOAT(126) 
+ ADVT_ST_ON                                NOT NULL VARCHAR2(20) 
+ MASTER_ID                                          NUMBER 
+ POKEMON_ID                                         NUMBER 
+SQL> insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values 
+(101,'soorya',5,19,'Male',12000,'11/09/2018',null,1); 
+1 row created. 
+SQL> insert into trainer(trainer_id,trainer_name,badge,age,gender,money,advt_st_on,master_id,pokemon_id) values 
+(102,'yogesh',5,19,'Male',12000,'11/09/2018',101,4); 
+1 row created. 
+SQL> delete from pokemon where species='Seed Pokemon'; 
+delete from pokemon where species='Seed Pokemon' 
+ERROR at line 1: 
+ORA-02292: integrity constraint (SOORYA.C1) violated - child record found --Insert from other tables 
+SQL> select * from pokemon_copy; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+7 rows selected. 
+SQL> create table  pokemon_copy2 as select * from pokemon where 1=0; 
+Table created. 
+SQL> select * from pokemon_copy2; 
+no rows selected 
+SQL> insert into pokemon_copy2 select pokemon_id,pokemon_name,experience,lv,height,weight,species from pokemon where lv>5; 
+4 rows created. 
+SQL> select * from pokemon_copy2; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokémon 
+SQL> create table  pokemon_copy3 as select * from pokemon where 1=0; 
+Table created. 
+SQL> insert into pokemon_copy3 (pokemon_id,pokemon_name,experience,lv,height,weight,species) select 
+pokemon_id,pokemon_name,experience,lv,height,weight,species from pokemon where weight>50; 
+2 rows created. 
+SQL> select * from pokemon_copy3; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokémon 
+SQL> delete from pokemon_copy3; 
+2 rows deleted. 
+SQL> create table t1 as select * from pokemon; 
+Table created. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> delete from t1 where species='Seed Pokemon'; 
+3 rows deleted. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokémon 
+SQL> delete from t1 where species like 'Seed Pokemon'; 
+3 rows deleted. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> rollback to A; 
+Rollback complete. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokémon 
+SQL> SELECT * FROM Pokemon WHERE pokemon_name LIKE 'C%'; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+SQL> SELECT * FROM Pokémon WHERE pokemon_name LIKE '%le'; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> SELECT * FROM Pokemon  WHERE pokemon_name LIKE '%saur%'; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+SQL> SELECT * FROM Pokemon WHERE pokemon_name LIKE '________'; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokémon 
+SQL>  DELETE FROM t1 WHERE pokemon_name LIKE 'S%'; 
+1 row deleted. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+6 rows selected. 
+SQL>  DELETE FROM t1 WHERE pokemon_name LIKE '%r'; 
+4 rows deleted. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> DELETE FROM t1 WHERE pokemon_name LIKE '_h%'; 
+3 rows deleted. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> DELETE FROM t1 WHERE pokemon_name LIKE '%aur' and weight>90; 
+1 row deleted. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+6 rows selected. 
+SQL> DELETE FROM t1 WHERE pokemon_name LIKE '%a' or weight>90; 
+2 rows deleted. 
+SQL> select * from t1; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> insert into trainer values(103,'ash',2,10,'Male',1000,'23/2/2024',101,7); 
+1 row created. 
+SQL> insert into trainer values(104,'misty',7,13,'Female',22000,'17/4/2021',101,7); 
+1 row created. 
+SQL> select * from pokemon; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+7 rows selected. 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                       1000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    22000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> update trainer set money=money+10000; 
+4 rows updated. 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                      11000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    32000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      22000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      22000 11/09/2018                  101          4 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                       1000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    22000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> update trainer set money=money+10000 where age<15; 
+2 rows updated. 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                      11000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    32000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                       1000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    22000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> update trainer set money=money+10000 where age<15 and trainer_name like '_____'; 
+1 row updated. 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                       1000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    32000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> select * fromtrainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                       1000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    22000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> update trainer set money=money+10000,badge=badge-3 where age<15 and trainer_name like '_____'; 
+1 row updated. 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                       1000 23/2/2024                   101          7 
+       104 misty                         4         13 Female                    32000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> select * from trainer; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- -------------------- ---------- ---------- 
+       103 ash                           2         10 Male                       1000 23/2/2024                   101          7 
+       104 misty                         7         13 Female                    22000 17/4/2021                   101          7 
+       101 soorya                        5         19 Male                      12000 11/09/2018                               1 
+       102 yogesh                        5         19 Male                      12000 11/09/2018                  101          4 
+SQL> select sysdate from dual; 
+SYSDATE --------- 
+23-FEB-26 
+SQL> create table dat(dob date,age number); 
+Table created. 
+SQL> insert into dat(dob) values('10-feb-26'); 
+1 row created. 
+SQL> insert into dat(dob) values('10-feb-2001'); 
+1 row created. 
+DOB              
+AGE --------- ---------- 
+10-FEB-26 
+10-FEB-01 
+SQL> update dat set age=trunc(months_between(sysdate,dob)/12); 
+2 rows updated. 
+SQL> select * from dat; 
+DOB              
+AGE --------- ---------- 
+10-FEB-26          
+10-FEB-01         
+0 
+25 
+SQL> CREATE TABLE pokemon_backup ( 
+2      
+3      
+4      
+5      
+6      
+7      
+8      
+9  ); 
+pokemon_id NUMBER PRIMARY KEY, 
+pokemon_name VARCHAR2(20) NOT NULL, 
+experience NUMBER, 
+lv NUMBER, 
+height FLOAT, 
+weight FLOAT, 
+species VARCHAR2(30) 
+Table created. 
+SQL> INSERT INTO pokemon_backup 
+2  VALUES (1, 'Bulbasaur', 100, 6, 0.7, 6.9, 'Seed Pokemon'); 
+1 row created. 
+SQL> INSERT INTO pokemon_backup 
+2  VALUES (8, 'Wartortle', 142, 16, 1.0, 22.5, 'Turtle Pokemon'); 
+1 row created. 
+Merge 
+__________________________________ 
+before: 
+SQL> 
+SQL> select * from pokemon; 
+POKEMON_ID POKEMON_NAME         
+EXPERIENCE         
+LV     
+HEIGHT     WEIGHT ---------- -------------------- ---------- ---------- ---------- --------- 
+SPECIES -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 
+Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 
+Seed Pokemon 
+         3 Venusaur                    236         32          2        100 
+Seed Pokemon 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT ---------- -------------------- ---------- ---------- ---------- ---------- 
+SPECIES -------------------- 
+         4 Charmander                   62          5         .6        8.5 
+Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 
+Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 
+Flame Pokemon 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT ---------- -------------------- ---------- ---------- ---------- ---------- 
+SPECIES -------------------- 
+         7 Squirtle                     63          5         .5          9 
+Tiny Turtle Pokemon 
+7 rows selected. 
+SQL> select * from pokemon_backup; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT ---------- -------------------- ---------- ---------- ---------- ---------- 
+SPECIES ------------------------------ 
+         1 Bulbasaur                   100          6         .7        6.9 
+Seed Pokemon 
+         8 Wartortle                   142         16          1       22.5 
+Turtle Pokemon 
+SQL> MERGE INTO pokemon p 
+  2  USING pokemon_backup b 
+  3  ON (p.pokemon_id = b.pokemon_id) 
+  4  WHEN MATCHED THEN 
+  5      UPDATE SET p.experience = b.experience 
+  6  WHEN NOT MATCHED THEN 
+  7      INSERT (pokemon_id, pokemon_name, experience, lv, height, weight, species) 
+  8      VALUES (b.pokemon_id, b.pokemon_name, b.experience, b.lv, b.height, b.weight, b.species); 
+2 rows merged 
+SQL> select * from pokemon 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                   100          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+         8 Wartortle                   142         16          1       22.5 Turtle Pokemon 
+8 rows selected. 
+SQL> select * from pokemon_backup; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- ------------------------------ 
+         1 Bulbasaur                   100          6         .7        6.9 Seed Pokemon 
+         8 Wartortle                   142         16          1       22.5 Turtle Pokemon 
+SQL> create table pokemon2 as select * from pokemon; 
+Table created. 
+SQL> select * from pokemon_copy; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+7 rows selected. 
+SQL> select lv,species from pokemon_copy; 
+        LV SPECIES ---------- -------------------- 
+         5 Seed Pokemon 
+        16 Seed Pokemon 
+        32 Seed Pokemon 
+         5 Lizard Pokemon 
+        16 Flame Pokemon 
+        36 Flame Pokemon 
+         5 Tiny Turtle Pokemon 
+7 rows selected. 
+SQL> select lv from pokemon_copy; 
+        LV ---------- 
+         5 
+        16 
+        32 
+         5 
+        16 
+        36 
+         5  
+7 ows selected. 
+SQL> select distinct lv from pokemon_copy; 
+        LV ---------- 
+         5 
+        16 
+        32 
+        36 
+SQL> select lv as lavvejnef from pokemon_copy; 
+ LAVVEJNEF ---------- 
+         5 
+        16 
+        32 
+         5 
+        16 
+        36 
+         5 
+7 rows selected. 
+SQL> select pokemon_name, lv+20 from pokemon_copy; 
+POKEMON_NAME              LV+20 -------------------- ---------- 
+Bulbasaur                    25 
+Ivysaur                      36 
+Venusaur                     52 
+Charmander                   25 
+Charmeleon                   36 
+Charizard                    56 
+Squirtle                     25 
+7 rows selected. 
+SQL> select pokemon_name, lv+20 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                    25 
+Ivysaur                      36 
+Venusaur                     52 
+Charmander                   25 
+Charmeleon                   36 
+Charizard                    56 
+Squirtle                     25 
+7 rows selected. 
+SQL> select pokemon_name, lv-3 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                     2 
+Ivysaur                      13 
+Venusaur                     29 
+Charmander                    2 
+Charmeleon                   13 
+Charizard                    33 
+Squirtle                      2 
+7 rows selected. 
+SQL> select pokemon_name, lv*2 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                    10 
+Ivysaur                      32 
+Venusaur                     64 
+Charmander                   10 
+Charmeleon                   32 
+Charizard                    72 
+Squirtle                     10 
+7 rows selected. 
+SQL> select pokemon_name, lv/2 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                   2.5 
+Ivysaur                       8 
+Venusaur                     16 
+Charmander                  2.5 
+Charmeleon                    8 
+Charizard                    18 
+Squirtle                    2.5 
+7 rows selected. 
+SQL> select pokemon_name, lv+20 from pokemon_copy; 
+POKEMON_NAME              LV+20 -------------------- ---------- 
+Bulbasaur                    25 
+Ivysaur                      36 
+Venusaur                     52 
+Charmander                   25 
+Charmeleon                   36 
+Charizard                    56 
+Squirtle                     25 
+7 rows selected. 
+SQL> select pokemon_name, lv+20 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                    25 
+Ivysaur                      36 
+Venusaur                     52 
+Charmander                   25 
+Charmeleon                   36 
+Charizard                    56 
+Squirtle                     25 
+7 rows selected. 
+SQL> select pokemon_name, lv-3 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                     2 
+Ivysaur                      13 
+Venusaur                     29 
+Charmander                    2 
+Charmeleon                   13 
+Charizard                    33 
+Squirtle                      2 
+7 rows selected. 
+SQL> select pokemon_name, lv*2 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                    10 
+Ivysaur                      32 
+Venusaur                     64 
+Charmander                   10 
+Charmeleon                   32 
+Charizard                    72 
+Squirtle                     10 
+7 rows selected. 
+SQL> select pokemon_name, lv/2 leve from pokemon_copy; 
+POKEMON_NAME               LEVE -------------------- ---------- 
+Bulbasaur                   2.5 
+Ivysaur                       8 
+Venusaur                     16 
+Charmander                  2.5 
+Charmeleon                    8 
+Charizard                    18 
+Squirtle                    2.5 
+7 rows selected. 
+SQL> select * from pokemon_copy; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+7 rows selected. 
+SQL> select * from pokemon_copy where experience between 100 and 200; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+SQL> select * from pokemon_copy where experience not between 100 and 200; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> select * from pokemon_copy where species in ('Flame Pokmon','Lizard Pokemon'); 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+SQL> select * from pokemon_copy where species not in ('Flame Pokemon','Lizard Pokemon'); 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokemon 
+SQL> select * from pokemon_copy where species like '%F%'; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         5 Charmeleon                  142         16        1.1         19 Flame Pokemon 
+         6 Charizard                   240         36        1.7       90.5 Flame Pokemon 
+SQL> select * from pokemon_copy where species not like '%F%'; 
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT SPECIES ---------- -------------------- ---------- ---------- ---------- ---------- -------------------- 
+         1 Bulbasaur                    64          5         .7        6.9 Seed Pokemon 
+         2 Ivysaur                     142         16          1         13 Seed Pokemon 
+         3 Venusaur                    236         32          2        100 Seed Pokemon 
+         4 Charmander                   62          5         .6        8.5 Lizard Pokemon 
+         7 Squirtle                     63          5         .5          9 Tiny Turtle Pokem 
+SQL> select pokemon_name || species from pokemon_copy; 
+POKEMON_NAME||SPECIES ---------------------------------------- 
+BulbasaurSeed Pokemon 
+IvysaurSeed Pokemon 
+VenusaurSeed Pokemon 
+CharmanderLizard Pokemon 
+CharmeleonFlame Pokemon 
+CharizardFlame Pokemon 
+SquirtleTiny Turtle Pokemon 
+7 rows selected. 
+SQL> SELECT pokemon_name || ' - ' || species AS details 
+2  FROM pokemon_copy; 
+DETAILS ------------------------------------------- 
+Bulbasaur - Seed Pokemon 
+Ivysaur - Seed Pokemon 
+Venusaur - Seed Pokemon 
+Charmander - Lizard Pokemon 
+Charmeleon - Flame Pokemon 
+Charizard - Flame Pokemon 
+Squirtle - Tiny Turtle Pokemon 
+7 rows selected. 
+SQL> SELECT pokemon_name || ' (Lv ' || lv || ')' AS info 
+2  FROM pokemon; 
+INFO ------------------------------------------------------------------ 
+Bulbasaur (Lv 5) 
+Ivysaur (Lv 16) 
+Venusaur (Lv 32) 
+Charmander (Lv 5) 
+Charmeleon (Lv 16) 
+Charizard (Lv 36) 
+Squirtle (Lv 5) 
+Wartortle (Lv 16) 
+8 rows selected. 
+SQL> SELECT pokemon_name || ' weighs ' || weight || ' kg' AS weight_info 
+2  FROM pokemon; 
+WEIGHT_INFO 
+S -------------------- 
+BULBASAUR 
+IVYSAUR 
+VENUSAUR 
+CHARMANDER 
+CHARMELEON 
+CHARIZARD 
+SQUIRTLE 
+7 rows seected. 
+SQL> SELECT LOWER(species) 
+2  FROM pokemon_copy; 
+LOWER(SPECIES) -------------------- 
+seed pokemon 
+seed pokemon 
+seed pokemon 
+lizard pokemon 
+f
+lame pokemon 
+f
+lame pokemon 
+tiny turtle pokemon 
+7 rows selected. 
+SQL> SELECT INITCAP(pokemon_name) 
+2  FROM pokemon_copy; 
+INITCAP(POKEMON_NAME -------------------- 
+Bulbasaur 
+Ivysaur 
+Venusaur 
+Charmander 
+Charmeleon 
+Charizard 
+Squirtle 
+7 rows selected. 
+SQL> SELECT INITCAP('john man') from pokemon_copy; 
+INITCAP( -------- 
+John Man 
+John Man 
+John Man 
+SQL> SELECT pokemon_name, LENGTH(pokemon_name) 
+2  FROM pokemon_copy; 
+POKEMON_NAME         LENGTH(POKEMON_NAME) -------------------- -------------------- 
+Bulbasaur                               
+Ivysaur                                 
+Venusaur                                
+Charmander                             
+Charmeleon                             
+Charizard                               
+Squirtle                                
+7 rows selected. 
+9 
+7 
+8 
+8 
+9 
+10 
+10 
+SQL> SELECT SUBSTR(pokemon_name,1,3) 
+2  FROM pokemon_copy; 
+SUBSTR(POKEM ------------ 
+Bul 
+Ivy 
+Ven 
+Cha 
+Cha 
+Cha 
+Squ 
+7 rows selected. 
+SQL> SELECT pokemon_name, INSTR(pokemon_name,'a') 
+2  FROM pokemon_copy; 
+POKEMON_NAME         INSTR(POKEMON_NAME,'A') -------------------- ----------------------- 
+Bulbasaur                                  
+Ivysaur                                    
+Venusaur                                   
+Charmander                                 
+Charmeleon                                 
+Charizard                                  
+Squirtle                                   
+7 rows selected. 
+5 
+0 
+5 
+6 
+3 
+3 
+3 
+SQL> SELECT REPLACE(species,'Pokemon','Monster') 
+2  FROM pokemon_copy; 
+REPLACE(SPECIES,'POKEMON','MONSTER') ---------------------------------------------------------------------------------------------------- 
+Seed Monster 
+Seed Monster 
+Seed Monster 
+Lizard Monster 
+Flame Monster 
+Flame Monster 
+Tiny Turtle Monster 
+7 rows selected. 
+SQL> SELECT TRIM(pokemon_name) 
+2  FROM pokemon_copy; 
+TRIM(POKEMON_NAME) -------------------- 
+Bulbasaur 
+Ivysaur 
+Venusaur 
+Charmander 
+Charmeleon 
+Charizard 
+Squirtle 
+7 rows selected. 
+SQL> SELECT LPAD(pokemon_name,15,'*') 
+2  FROM pokemon_copy; 
+LPAD(POKEMON_NAME,15,'*') ------------------------------------------------------------ 
+******Bulbasaur 
+********Ivysaur 
+*******Venusaur 
+*****Charmander 
+*****Charmeleon 
+******Charizard 
+*******Squirtle 
+7 rows selected. 
+SQL> SELECT RPAD(pokemon_name,15,'-') 
+2  FROM pokemon_copy; 
+RPAD(POKEMON_NAME,15,'-') ------------------------------------------------------------ 
+Bulbasaur------ 
+Ivysaur-------- 
+7 rows selected. 
+SQL> SELECT ASCII('A') FROM dual; 
+ASCII('A') ---------- 
+65 
+SQL> SELECT CHR(65) FROM dual; 
+C - 
+A 
+SQL> SELECT CHR(65) FROM dual; 
+C - 
+A 
+SQL> SELECT CHR(65) FROM pokemon_copy; 
+C - 
+A 
+A 
+A 
+7 rows selected. 
+SQL> SELECT ASCII('A') FROM pokemon_copy; 
+ASCII('A') ---------- 
+65 
+65 
+65 
+65 
+7 rows selected. 
+SQL> SELECT ABS(-10) 
+2  FROM pokemon_copy; 
+ABS(-10) ---------- 
+10 
+10 
+7 rows selected. 
+SQL> SELECT CEIL(height) 
+  2  FROM pokemon_copy; 
+CEIL(HEIGHT) ------------ 
+           1 
+           1 
+           2 
+           1 
+           2 
+           2 
+           1 
+7 rows selected. 
+SQL> SELECT FLOOR(weight) 
+  2  FROM pokemon_copy; 
+FLOOR(WEIGHT) ------------- 
+            6 
+           13 
+          100 
+            8 
+7 rows selected. 
+SQL> SELECT ROUND(weight) 
+  2  FROM pokemon_copy; 
+ROUND(WEIGHT) ------------- 
+            7 
+           13 
+          100 
+            9 
+7 rows selected. 
+SQL> SELECT ROUND(weight,1) 
+  2  FROM pokemon_copy; 
+ROUND(WEIGHT,1) --------------- 
+            6.9 
+             13 
+            100 
+           90.5 
+7 rows selected. 
+SQL> SELECT ROUND(-6.5) FROM pokemon_copy; 
+ROUND(-6.5) ----------- 
+         -7 
+         -7 
+         -7 
+         -7 
+7 rows selected. 
+SQL> SELECT ROUND(-6.567,2) FROM pokemon_copy; 
+ROUND(-6.567,2) --------------- 
+          -6.57 
+          -6.57 
+7 rows selected. 
+SQL> SELECT TRUNC(weight) 
+  2  FROM pokemon_copy; 
+TRUNC(WEIGHT) ------------- 
+            6 
+           13 
+          100 
+7 rows selected. 
+SQL> SELECT TRUNC(weight,1) 
+  2  FROM pokemon_copy; 
+TRUNC(WEIGHT,1) --------------- 
+            6.9 
+             13 
+            100 
+7 rows selected. 
+SQL> SELECT TRUNC(-6.9) FROM pokemon_copy; 
+TRUNC(-6.9) ----------- 
+         -6 
+         -6 
+         -6 
+         -6 
+7 rows selected. 
+SQL> SELECT TRUNC(-6.567,2) FROM pokemon_copy; 
+ 
+TRUNC(-6.567,2) --------------- 
+          -6.56 
+          -6.56 
+          -6.56 
+7 rows selected. 
+SQL> SELECT pokemon_id, MOD(pokemon_id,2) 
+  2  FROM pokemon_copy; 
+POKEMON_ID MOD(POKEMON_ID,2) ---------- ----------------- 
+         1                 1 
+         2                 0 
+         3                 1 
+         4                 0 
+         5                 1 
+         6                 0 
+         7                 1 
+7 rows selected. 
+SQL> SELECT POWER(lv,2) 
+  2  FROM pokemon_copy; 
+POWER(LV,2) ----------- 
+         25 
+        256 
+       1024 
+         25 
+7 rows selected. 
+SQL> SELECT SQRT(lv) 
+  2  FROM pokemon_copy; 
+  SQRT(LV) ---------- 
+2.23606798 
+         4 
+5.65685425 
+2.23606798 
+7 rows selected. 
+SQL> SELECT SIGN(experience) 
+  2  FROM pokemon_copy; 
+SIGN(EXPERIENCE) ---------------- 
+               1 
+               1 
+               1 
+               1 
+7 rows selected. 
+SQL> SELECT EXP(2) 
+  2  FROM pokemon_copy; 
+    EXP(2) ---------- 
+ 7.3890561 
+ 7.3890561 
+ 7.3890561 
+7 rows selected. 
+SQL> SELECT GREATEST(height, weight) 
+  2  FROM pokemon_copy; 
+GREATEST(HEIGHT,WEIGHT) ----------------------- 
+                    6.9 
+                     13 
+                    100 
+7 rows selected. 
+SQL> SELECT LEAST(height, weight) 
+  2  FROM pokemon_copy; 
+LEAST(HEIGHT,WEIGHT) -------------------- 
+                  .7 
+                   1 
+                   2 
+                  .6 
+7 rows selected. 
+SQL> SELECT LOG(10,100) FROM pokemon_copy; 
+LOG(10,100) ----------- 
+          2 
+          2 
+          2 
+7 row selected. 
+SQL> SELECT SUM(experience) 
+2  FROM pokemon_copy; 
+SUM(EXPERIENCE) --------------- 
+949 
+SQL> SELECT AVG(weight) 
+2  FROM pokemon_copy; 
+AVG(WEIGHT) ----------- 
+35.2714286 
+SQL> SELECT MIN(height) 
+2  FROM pokemon_copy; 
+MIN(HEIGHT) ----------- 
+.5 
+SQL> SELECT MAX(weight) 
+2  FROM pokemon_copy; 
+MAX(WEIGHT) ----------- 
+100 
+SQL> SELECT STDDEV(experience) 
+2  FROM pokemon_copy; 
+STDDEV(EXPERIENCE) ------------------ 
+78.3961248 
+SQL> SELECT VARIANCE(experience) 
+2  FROM pokemon_copy; 
+VARIANCE(EXPERIENCE) -------------------- 
+6145.95238 
+SQL> SELECT COUNT(DISTINCT species) FROM pokemon_copy; 
+SQL> SELECT COUNT(*) 
+2  FROM pokemon_copy; 
+COUNT(*) ---------- 
+7 
+SQL> SELECT COUNT(species) 
+2  FROM pokemon_copy; 
+COUNT(SPECIES) -------------- 
+7 
+COUNT(DISTINCTSPECIES) ---------------------- 
+4 
+SQL> SELECT species 
+2  FROM pokemon_copy 
+3  GROUP BY species; 
+SPECIES -------------------- 
+Seed Pokemon 
+Lizard Pokemon 
+Flame Pokemon 
+Tiny Turtle Pokemon 
+SQL> SELECT pokemon_name 
+2  FROM pokemon_copy 
+3  ORDER BY pokemon_name; 
+POKEMON_NAME -------------------- 
+Bulbasaur 
+Charizard 
+Charmander 
+Charmeleon 
+Ivysaur 
+Squirtle 
+Venusaur 
+7 rows selected. 
+SQL> SELECT pokemon_name 
+2  FROM pokemon_copy 
+3  ORDER BY pokemon_name DESC; 
+POKEMON_NAME -------------------- 
+Venusaur 
+Squirtle 
+Ivysaur 
+Charmeleon 
+Charmander 
+Charizard 
+Bulbasaur 
+7 rows selected. 
+SQL> SELECT species, weight 
+  2  FROM pokemon_copy 
+  3  ORDER BY species DESC; 
+SPECIES                  WEIGHT -------------------- ---------- 
+Tiny Turtle Pokemon           9 
+Seed Pokemon                6.9 
+Seed Pokemon                 13 
+Seed Pokemon                100 
+Lizard Pokemon              8.5 
+Flame Pokemon              90.5 
+Flame Pokemon                19 
+7 rows selected. 
+SQL> SELECT species, weight 
+  2  FROM pokemon_copy 
+  3  ORDER BY species, weight DESC; 
+SPECIES                  WEIGHT -------------------- ---------- 
+Flame Pokemon              90.5 
+Flame Pokemon                19 
+Lizard Pokemon              8.5 
+Seed Pokemon                100 
+Seed Pokemon                 13 
+Seed Pokemon                6.9 
+Tiny Turtle Pokemon           9 
+7 rows selected. 
+SQL> SELECT species, COUNT(*) 
+  2  FROM pokemon_copy 
+  3  GROUP BY species; 
+SPECIES                COUNT(*) -------------------- ---------- 
+Seed Pokemon                  3 
+Lizard Pokemon                1 
+Flame Pokemon                 2 
+Tiny Turtle Pokemon           1 
+SQL> SELECT species, AVG(weight) 
+  2  FROM pokemon_copy 
+  3  GROUP BY species 
+  4  HAVING AVG(weight) > 20; 
+SPECIES              AVG(WEIGHT) -------------------- ----------- 
+Seed Pokemon          39.9666667 
+Flame Pokemon              54.75 
+SQL> SELECT COUNT(*) AS total_pokemon 
+  2  FROM pokemon_copy 
+  3  ORDER BY total_pokemon; 
+TOTAL_POKEMON ------------- 
+            7 
+SQL> SELECT species, COUNT(*) 
+  2  FROM pokemon_copy 
+  3  GROUP BY species 
+  4  ORDER BY species; 
+SPECIES                COUNT(*) -------------------- ---------- 
+Flame Pokemon                 2 
+Lizard Pokemon                1 
+Seed Pokemon                  3 
+Tiny Turtle Pokemon           1 
+SQL> SELECT species, COUNT(*) 
+  2  FROM pokemon_copy 
+  3  GROUP BY species 
+  4  HAVING COUNT(*) > 2 
+  5  ORDER BY COUNT(*) DESC; 
+SPECIES                COUNT(*) -------------------- ---------- 
+Seed Pokemon                  3 
+SQL> SELECT species, COUNT(*) 
+  2  FROM pokemon_copy 
+  3  GROUP BY species 
+  4  HAVING COUNT(*) >= 2; 
+SPECIES                COUNT(*) -------------------- ---------- 
+Seed Pokemon                  3 
+Flame Pokemon                 2 
+SQL> SELECT species, COUNT(*) AS total 
+  2  FROM pokemon_copy 
+  3  GROUP BY species 
+  4  ORDER BY total DESC; 
+SPECIES                   TOTAL -------------------- ---------- 
+Seed Pokemon                  3 
+Flame Pokemon                 2 
+Tiny Turtle Pokemon           1 
+Lizard Pokemon                1 
+SQL> SELECT species, AVG(weight) AS avg_weight 
+  2  FROM pokemon_copy 
+  3  GROUP BY species 
+  4  HAVING AVG(weight) > 20 
+  5  ORDER BY avg_weight DESC; 
+SPECIES              AVG_WEIGHT -------------------- ---------- 
+Flame Pokemon             54.75 
+Seed Pokemon         39.9666667 
+SQL> SELECT species, COUNT(*) AS total 
+  2  FROM pokemon_copy 
+  3  GROUP BY species 
+  4  HAVING COUNT(*) > 1 
+  5  ORDER BY total DESC; 
+SPECIES                   TOTAL -------------------- ---------- 
+Seed Pokemon                  3 
+Flame Pokemon                 2 
+SQL> SELECT DBMS_RANDOM.VALUE FROM dual; 
+     VALUE ---------- 
+.400203616 
+SQL> SELECT SYSDATE FROM dual; 
+SYSDATE --------- 
+24-FEB-26 
+SQL> SELECT CURRENT_DATE FROM dual; 
+CURRENT_D --------- 
+24-FEB-26 
+SQL> SELECT TO_CHAR(12345) 
+2  FROM dual; 
+TO_CH ----- 
+12345 
+SQL> SELECT TO_NUMBER('123') 
+2  FROM dual; 
+TO_NUMBER('123') ---------------- 
+123 
+SQL> SELECT TO_NUMBER('123.45') 
+2  FROM dual; 
+TO_NUMBER('123.45') ------------------- 
+123.45 
+SQL> SELECT TO_NUMBER('1500') + 500 
+2  FROM dual; 
+TO_NUMBER('1500')+500 --------------------- 
+2000 
+SQL> accept tid number prompt"Enter Trainer ID:"; 
+Enter Trainer ID:101 
+SQL> select * from trainer 
+2  where trainer_id=&tid; 
+old   2: where trainer_id=&tid 
+new   2: where trainer_id=       101 
+TRAINER_ID TRAINER_NAME              
+BADGE        AGE GENDER ---------- -------------------- ---------- ---------- -------------------- 
+MONEY ADVT_ST_ON            
+MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- 
+101 soorya                        
+12000 11/09/2018                               
+5         
+19 Male 
+1 
+SQL> SELECT trainer_name, advt_ston 
+2  from trainer2; 
+TRAINER_NAME         
+ADVT_ST_O -------------------- --------- 
+Brock                
+Ash                  
+Misty                
+10-JAN-20 
+15-MAR-21 
+20-JUN-22 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         ADD_MONTHS(advt_st_on, 3) 
+  3  FROM trainer2; 
+TRAINER_NAME         ADD_MONTH -------------------- --------- 
+Brock                10-APR-20 
+Ash                  15-JUN-21 
+Misty                20-SEP-22 
+Gary                 01-NOV-21 
+Serena               12-FEB-24 
+Leon                 05-AUG-19 
+Red                  22-MAY-26 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         ADD_MONTHS(advt_st_on, -6) 
+  3  FROM trainer2; 
+TRAINER_NAME         ADD_MONTH -------------------- --------- 
+Brock                10-JUL-19 
+Ash                  15-SEP-20 
+Misty                20-DEC-21 
+Gary                 01-FEB-21 
+Serena               12-MAY-23 
+Leon                 05-NOV-18 
+17 rows selected 
+SQL> SELECT trainer_name, 
+  2         MONTHS_BETWEEN(SYSDATE, advt_st_on) 
+  3  FROM trainer2; 
+TRAINER_NAME         MONTHS_BETWEEN(SYSDATE,ADVT_ST_ON) -------------------- ---------------------------------- 
+Brock                                        73.4943332 
+Ash                                          59.3330429 
+Misty                                        44.1717525 
+Gary                                         54.7846558 
+Serena                                       27.4298171 
+Leon                                         81.6556235 
+Red                                           .10723641 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         NEXT_DAY(advt_st_on, 'MONDAY') 
+  3  FROM trainer2; 
+TRAINER_NAME        NEXT_DAY( -------------------- --------- 
+Brock                13-JAN-20 
+Ash                  22-MAR-21 
+Misty                27-JUN-22 
+Gary                 02-AUG-21 
+Serena               13-NOV-23 
+Leon                 06-MAY-19 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         LAST_DAY(advt_st_on) 
+  3  FROM trainer2; 
+TRAINER_NAME         LAST_DAY( -------------------- --------- 
+Brock                31-JAN-20 
+Ash                  31-MAR-21 
+Misty                30-JUN-22 
+Gary                 31-AUG-21 
+Serena               30-NOV-23 
+Leon                 31-MAY-19 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         ROUND(advt_st_on) 
+  3  FROM trainer2; 
+TRAINER_NAME         ROUND(ADV -------------------- --------- 
+Brock                10-JAN-20 
+Ash                  15-MAR-21 
+Misty                20-JUN-22 
+Gary                 01-AUG-21 
+Serena               12-NOV-23 
+Leon                 05-MAY-19 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         ROUND(advt_st_on, 'MONTH') 
+  3  FROM trainer2; 
+TRAINER_NAME         ROUND(ADV -------------------- --------- 
+Brock                01-JAN-20 
+Ash                  01-MAR-21 
+Misty                01-JUL-22 
+Gary                 01-AUG-21 
+Serena               01-NOV-23 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         ROUND(advt_st_on, 'YEAR') 
+  3  FROM trainer2; 
+TRAINER_NAME         ROUND(ADV -------------------- --------- 
+Brock                01-JAN-20 
+Ash                  01-JAN-21 
+Misty                01-JAN-22 
+Gary                 01-JAN-22 
+Serena               01-JAN-24 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         TRUNC(advt_st_on) 
+  3  FROM trainer2; 
+TRAINER_NAME         TRUNC(ADV -------------------- --------- 
+Brock                10-JAN-20 
+Ash                  15-MAR-21 
+Misty                20-JUN-22 
+Gary                 01-AUG-21 
+Serena               12-NOV-23 
+Leon                 05-MAY-19 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         TRUNC(advt_st_on, 'MONTH') 
+  3  FROM trainer2; 
+TRAINER_NAME         TRUNC(ADV -------------------- --------- 
+Brock                01-JAN-20 
+Ash                  01-MAR-21 
+Misty                01-JUN-22 
+Gary                 01-AUG-21 
+Serena               01-NOV-23 
+Leon                 01-MAY-19 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         TRUNC(advt_st_on, 'YEAR') 
+  3  FROM trainer2; 
+TRAINER_NAME         TRUNC(ADV -------------------- --------- 
+Brock                01-JAN-20 
+Ash                  01-JAN-21 
+Misty                01-JAN-22 
+Gary                 01-JAN-21 
+Serena               01-JAN-23 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         EXTRACT(YEAR FROM advt_st_on) 
+  3  FROM trainer2; 
+TRAINER_NAME         EXTRACT(YEARFROMADVT_ST_ON) -------------------- --------------------------- 
+Brock                                       2020 
+Ash                                         2021 
+Misty                                       2022 
+Gary                                        2021 
+Serena                                      2023 
+Leon                                        2019 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         EXTRACT(MONTH FROM advt_st_on) 
+  3  FROM trainer2; 
+TRAINER_NAME         EXTRACT(MONTHFROMADVT_ST_ON) -------------------- ---------------------------- 
+Brock                                           1 
+Ash                                             3 
+Misty                                           6 
+Gary                                            8 
+Serena                                         11 
+Leon                                            5 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         EXTRACT(DAY FROM advt_st_on) 
+  3  FROM trainer2; 
+TRAINER_NAME         EXTRACT(DAYFROMADVT_ST_ON) -------------------- -------------------------- 
+Brock                                        10 
+Ash                                          15 
+Misty                                        20 
+Gary                                          1 
+Serena                                       12 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         advt_st_on + 10 
+  3  FROM trainer2; 
+TRAINER_NAME         ADVT_ST_O -------------------- --------- 
+Brock                20-JAN-20 
+Ash                  25-MAR-21 
+Misty                30-JUN-22 
+Gary                 11-AUG-21 
+Serena               22-NOV-23 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         advt_st_on - 5 
+  3  FROM trainer2; 
+TRAINER_NAME         ADVT_ST_O -------------------- --------- 
+Brock                05-JAN-20 
+Ash                  10-MAR-21 
+Misty                15-JUN-22 
+Gary                 27-JUL-21 
+Serena               07-NOV-23 
+Leon                 30-APR-19 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         SYSDATE - advt_st_on 
+  3  FROM trainer2; 
+TRAINER_NAME         SYSDATE-ADVT_ST_ON -------------------- ------------------ 
+Brock                        2238.32726 
+Ash                          1808.32726 
+Misty                        1346.32726 
+Gary                         1669.32726 
+Serena                       836.327257 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         TO_CHAR(advt_st_on,'DD-MM-YYYY') 
+  3  FROM trainer2; 
+TRAINER_NAME         TO_CHAR(AD -------------------- ---------- 
+Brock                10-01-2020 
+Ash                  15-03-2021 
+Misty                20-06-2022 
+Gary                 01-08-2021 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         TO_CHAR(advt_st_on,'DD-MONTH-YYYY') 
+  3  FROM trainer2; 
+TRAINER_NAME         TO_CHAR(ADVT_ST_ON,'DD-MONTH-YYYY') -------------------- -------------------------------------------- 
+Brock                10-JANUARY  -2020 
+Ash                  15-MARCH    -2021 
+Misty                20-JUNE     -2022 
+Gary                 01-AUGUST   -2021 
+Serena               12-NOVEMBER -2023 
+17 rows selected. 
+SQL> select trainer_name, 
+  2          TO_CHAR(advt_st_on,'DD-MON-YYYY') 
+  3  FROM trainer2; 
+TRAINER_NAME         TO_CHAR(ADVT_ST_ON,' -------------------- -------------------- 
+Brock                10-JAN-2020 
+Ash                  15-MAR-2021 
+Misty                20-JUN-2022 
+Gary                 01-AUG-2021 
+Serena               12-NOV-2023 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2  TO_CHAR(advt_st_on,'DD-MONTH-YY') 
+  3  FROM trainer2; 
+TRAINER_NAME         TO_CHAR(ADVT_ST_ON,'DD-MONTH-YY') -------------------- ------------------------------------------ 
+Brock                10-JANUARY  -20 
+Ash                  15-MARCH    -21 
+Misty                20-JUNE     -22 
+Gary                 01-AUGUST   -21 
+Serena               12-NOVEMBER -23 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         TO_CHAR(advt_st_on,'DAY') 
+  3  FROM trainer2; 
+TRAINER_NAME         TO_CHAR(ADVT_ST_ON,'DAY') -------------------- ------------------------------------ 
+Brock                FRIDAY 
+Ash                  MONDAY 
+Misty                MONDAY 
+Gary                 SUNDAY 
+Serena               SUNDAY 
+17 rows selected. 
+SQL> SELECT trainer_name, 
+  2         TO_CHAR(advt_st_on, 
+  3         'DAY DD MONTH YYYY') 
+  4  FROM trainer2; 
+TRAINER_NAME         TO_CHAR(ADVT_ST_ON,'DAYDDMONTHYYYY') -------------------- --------------------------------------------------------------------------------- 
+Brock                FRIDAY    10 JANUARY   2020 
+Ash                  MONDAY    15 MARCH     2021 
+Misty                MONDAY    20 JUNE      2022 
+Gary                 SUNDAY    01 AUGUST    2021 
+Serena               SUNDAY    12 NOVEMBER  2023 
+17 rows selected. 
+SQL> SELECT * 
+  2  FROM trainer2 
+  3  WHERE advt_st_on < 
+  4        TO_DATE('01-01-2022','DD-MM-YYYY'); 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_O  MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- --------- ---------- ---------- 
+         1 Brock                         8         25 Male                      50000 10-JAN-20                   101 
+         2 Ash                           5         18 Male                      20000 15-MAR-21          1        102 
+         4 Gary                          6         20 Male                      25000 01-AUG-21          2        104 
+         6 Leon                         10         28 Male                      90000 05-MAY-19                   106 
+SQL> SELECT * 
+  2  FROM trainer2 
+  3  WHERE EXTRACT(MONTH FROM advt_st_on) = 2; 
+TRAINER_ID TRAINER_NAME              BADGE        AGE GENDER                    MONEY ADVT_ST_O  MASTER_ID POKEMON_ID ---------- -------------------- ---------- ---------- -------------------- ---------- --------- ---------- ---------- 
+        10 Red                           6         21 Male                      40000 22-FEB-26                   201 
+        11 Blue                          7         22 Male                      42000 22-FEB-26                   202 
+        12 Green                         5         20 Female                    30000 22-FEB-26                   203 
+        13 Cynthia                       9         27 Female                    80000 22-FEB-26                   204 
+        14 Steven                        8         26 Male                      75000 22-FEB-26                   205 
+        15 Lance                        10         30 Male                      95000 22-FEB-26                   206 
+        16 Iris                          4         19 Female                    20000 22-FEB-26                   207 
+        17 May                           3         18 Female                    18000 22-FEB-26                   208 
+        18 Dawn                          4         19 Female                    22000 22-FEB-26                   209 
+        19 Tracey                        2         23 Male                      15000 22-FEB-26                   210 
+10 rows selected. 
+SQL> update pokemon_copy set weight=weight*-1; 
+5 rows updated. 
+SQL> SELECT TRUNC(weight,2) FROM pokemon_copy; 
+TRUNC(WEIGHT,2) --------------- 
+             -6 
+           -6.9 
+           -8.5 
+             -9 
+           -6.5 
+SQL> SELECT round(weight,2) FROM pokemon_copy; 
+ROUND(WEIGHT,2) --------------- 
+             -6 
+           -6.9 
+           -8.5 
+             -9 
+           -6.5 
