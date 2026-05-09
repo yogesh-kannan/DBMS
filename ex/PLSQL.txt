@@ -1,0 +1,647 @@
+SQL> select*from pokemon;
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+        25 Pikachu                     200          5         .4          6
+Forest
+
+         1 Bulbasaur                   300          6         .7        6.9
+Forest
+
+         4 Charmander                  250          6         .6        8.5
+Mountain
+
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+         7 Squirtle                    220          5         .5          9
+Lake
+
+       133 Eevee                       180          5         .3        6.5
+City
+
+
+SQL> select*from trainer;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      10000 11-JAN-00                     1          4
+Lance
+
+         6 Ash                                     2         15
+Male                       5000 12-JUN-11                     1         25
+Lance
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+
+         3 Brock                                   1         17
+Male                       3500 10-OCT-07                     1          4
+Lance
+
+1 Enable Output
+===============
+
+SQL> SET SERVEROUTPUT ON;
+
+2 Anonymous PL/SQL Block – Update Pokemon Level
+===============================================
+
+SQL> DECLARE
+  2      v_lv NUMBER;
+  3  BEGIN
+  4      v_lv := 20;
+  5
+  6      UPDATE Pokemon
+  7      SET lv = v_lv
+  8      WHERE pokemon_name = 'Pikachu';
+  9
+ 10      DBMS_OUTPUT.PUT_LINE('Level updated successfully');
+ 11
+ 12      COMMIT;
+ 13  END;
+ 14  /
+Level updated successfully
+
+PL/SQL procedure successfully completed.
+
+SQL> select*from pokemon where pokemon_name='Pikachu';
+
+POKEMON_ID POKEMON_NAME         EXPERIENCE         LV     HEIGHT     WEIGHT
+---------- -------------------- ---------- ---------- ---------- ----------
+LOCATION
+--------------------
+        25 Pikachu                     200         20         .4          6
+Forest
+
+3 Anonymous Block – Insert Trainer
+==================================
+
+SQL> DECLARE
+  2      v_trainer_id Trainer.trainer_id%TYPE := 2;
+  3      v_trainer_name Trainer.trainer_name%TYPE := 'May';
+  4      v_badge Trainer.badge%TYPE := 4;
+  5      v_age Trainer.age%TYPE := 20;
+  6      v_gender Trainer.gender%TYPE := 'Male';
+  7      v_advt_st_on Trainer.advt_st_on%TYPE := '12-JAN-2006';
+  8      v_master_id Trainer.master_id%TYPE := 1;
+  9      v_pokemon_id Trainer.pokemon_id%TYPE := 1;
+ 10      v_master_name Trainer.master_name%TYPE := 'Lance';
+ 11  BEGIN
+ 12      INSERT INTO Trainer(trainer_id, trainer_name,badge,age,gender,advt_st_on,master_id,pokemon_id,master_name)
+ 13      VALUES(v_trainer_id, v_trainer_name,v_badge,v_age,v_gender,v_advt_st_on,v_master_id,v_pokemon_id,v_master_name);
+ 14      DBMS_OUTPUT.PUT_LINE('Trainer inserted successfully');
+ 15      COMMIT;
+ 16  END;
+ 17  /
+Trainer inserted successfully
+
+PL/SQL procedure successfully completed.
+
+SQL> select*from trainer;
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+         1 Lance                                   8         25
+Male                      10000 11-JAN-00                     1          4
+Lance
+
+         6 Ash                                     2         15
+Male                       5000 12-JUN-11                     1         25
+Lance
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+
+         2 May                                     4         20
+Male                          0 12-JAN-2006                   1          1
+Lance
+
+         3 Brock                                   1         17
+Male                       3500 10-OCT-07                     1          4
+
+TRAINER_ID TRAINER_NAME                        BADGE        AGE
+---------- ------------------------------ ---------- ----------
+GENDER                    MONEY ADVT_ST_ON            MASTER_ID POKEMON_ID
+-------------------- ---------- -------------------- ---------- ----------
+MASTER_NAME
+-------------------------
+Lance
+
+4 Anonymous Block – Calculate Average Pokemon Level
+===================================================
+
+SQL> DECLARE
+  2      v_avg_level NUMBER;
+  3  BEGIN
+  4      SELECT AVG(lv)
+  5      INTO v_avg_level
+  6      FROM Pokemon;
+  7
+  8      DBMS_OUTPUT.PUT_LINE('Average Pokemon Level: ' || v_avg_level);
+  9  END;
+ 10  /
+Average Pokemon Level: 8.4
+
+PL/SQL procedure successfully completed.
+
+5 Using %ROWTYPE (Display Pokemon Details)
+==========================================
+
+SQL> DECLARE
+  2      v_pokemon Pokemon%ROWTYPE;
+  3  BEGIN
+  4      SELECT *
+  5      INTO v_pokemon
+  6      FROM Pokemon
+  7      WHERE pokemon_name='Pikachu';
+  8
+  9      DBMS_OUTPUT.PUT_LINE('Pokemon ID: ' || v_pokemon.pokemon_id);
+ 10      DBMS_OUTPUT.PUT_LINE('Name: ' || v_pokemon.pokemon_name);
+ 11      DBMS_OUTPUT.PUT_LINE('Level: ' || v_pokemon.lv);
+ 12      DBMS_OUTPUT.PUT_LINE('Height: ' || v_pokemon.height);
+ 13      DBMS_OUTPUT.PUT_LINE('Weight: ' || v_pokemon.weight);
+ 14      DBMS_OUTPUT.PUT_LINE('Location: ' || v_pokemon.location);
+ 15  END;
+ 16  /
+Pokemon ID: 25
+Name: Pikachu
+Level: 20
+Height: .4
+Weight: 6
+Location: Forest
+
+PL/SQL procedure successfully completed.
+
+6 Record Example
+================
+
+SQL> DECLARE
+  2      TYPE pokemon_record IS RECORD(
+  3          pokemon_id Pokemon.pokemon_id%TYPE,
+  4          pokemon_name Pokemon.pokemon_name%TYPE,
+  5          lv Pokemon.lv%TYPE
+  6      );
+  7
+  8      v_pokemon pokemon_record;
+  9
+ 10  BEGIN
+ 11      SELECT pokemon_id,pokemon_name,lv
+ 12      INTO v_pokemon
+ 13      FROM Pokemon
+ 14      WHERE pokemon_name='Pikachu';
+ 15
+ 16      DBMS_OUTPUT.PUT_LINE(v_pokemon.pokemon_name || ' Level: ' || v_pokemon.lv);
+ 17  END;
+ 18  /
+Pikachu Level: 20
+
+PL/SQL procedure successfully completed.
+
+7 Explicit Cursor Example
+=========================
+
+SQL> DECLARE
+  2      v_name Pokemon.pokemon_name%TYPE;
+  3      v_lv Pokemon.lv%TYPE;
+  4
+  5      CURSOR pokemon_cursor IS
+  6          SELECT pokemon_name,lv FROM Pokemon;
+  7
+  8  BEGIN
+  9      OPEN pokemon_cursor;
+ 10
+ 11      FETCH pokemon_cursor INTO v_name,v_lv;
+ 12
+ 13      DBMS_OUTPUT.PUT_LINE('Pokemon: '||v_name||' Level: '||v_lv);
+ 14
+ 15      CLOSE pokemon_cursor;
+ 16  END;
+ 17  /
+Pokemon: Pikachu Level: 20
+
+PL/SQL procedure successfully completed.
+
+8 Implicit Cursor Example
+=========================
+
+SQL> DECLARE
+  2      v_name Pokemon.pokemon_name%TYPE;
+  3      v_lv Pokemon.lv%TYPE;
+  4  BEGIN
+  5      SELECT pokemon_name,lv
+  6      INTO v_name,v_lv
+  7      FROM Pokemon
+  8      WHERE pokemon_id=1;
+  9
+ 10      DBMS_OUTPUT.PUT_LINE('Pokemon: '||v_name||' Level: '||v_lv);
+ 11  END;
+ 12  /
+Pokemon: Bulbasaur Level: 6
+
+PL/SQL procedure successfully completed.
+
+9 Cursor Attributes
+===================
+
+SQL> DECLARE
+  2      v_name Pokemon.pokemon_name%TYPE;
+  3      v_lv Pokemon.lv%TYPE;
+  4
+  5      CURSOR pokemon_cursor IS
+  6          SELECT pokemon_name,lv FROM Pokemon;
+  7
+  8  BEGIN
+  9      OPEN pokemon_cursor;
+ 10
+ 11      FETCH pokemon_cursor INTO v_name,v_lv;
+ 12
+ 13      IF pokemon_cursor%FOUND THEN
+ 14          DBMS_OUTPUT.PUT_LINE(v_name || ' ' || v_lv);
+ 15      END IF;
+ 16
+ 17      DBMS_OUTPUT.PUT_LINE('Rows fetched: ' || pokemon_cursor%ROWCOUNT);
+ 18
+ 19      CLOSE pokemon_cursor;
+ 20  END;
+ 21  /
+Pikachu 20
+Rows fetched: 1
+
+PL/SQL procedure successfully completed.
+
+10 IF – ELSIF – ELSE Example
+============================
+
+SQL> DECLARE
+  2      v_name Pokemon.pokemon_name%TYPE;
+  3      v_lv Pokemon.lv%TYPE;
+  4  BEGIN
+  5      SELECT pokemon_name,lv
+  6      INTO v_name,v_lv
+  7      FROM Pokemon
+  8      WHERE pokemon_id=1;
+  9
+ 10      IF v_lv < 20 THEN
+ 11          DBMS_OUTPUT.PUT_LINE(v_name || ' is Beginner Level');
+ 12      ELSIF v_lv BETWEEN 20 AND 50 THEN
+ 13          DBMS_OUTPUT.PUT_LINE(v_name || ' is Medium Level');
+ 14      ELSE
+ 15          DBMS_OUTPUT.PUT_LINE(v_name || ' is High Level');
+ 16      END IF;
+ 17  END;
+ 18  /
+Bulbasaur is Beginner Level
+Charmander is High Level
+Squirtle is Medium Level
+Pikachu is High Level
+
+PL/SQL procedure successfully completed.
+
+11 LOOP Example
+===============
+
+SQL> DECLARE
+  2      v_pokemon Pokemon%ROWTYPE;
+  3      v_num number:= 1;
+  4  BEGIN
+  5      SELECT *
+  6      INTO v_pokemon
+  7      FROM Pokemon
+  8      WHERE pokemon_name='Pikachu';
+  9      loop
+ 10     if v_num=1 then
+ 11                     DBMS_OUTPUT.PUT_LINE(v_num||' Pokemon ID: ' || v_pokemon.pokemon_id);
+ 12     end if;
+ 13     if v_num=2 then
+ 14                     DBMS_OUTPUT.PUT_LINE(v_num||' Name: ' || v_pokemon.pokemon_name);
+ 15     end if;
+ 16     if v_num=3 then
+ 17                     DBMS_OUTPUT.PUT_LINE(v_num||' Level: ' || v_pokemon.lv);
+ 18     end if;
+ 19     if v_num=3 then
+ 20                     DBMS_OUTPUT.PUT_LINE(v_num||' Height: ' || v_pokemon.height);
+ 21     end if;
+ 22     if v_num=4 then
+ 23                     DBMS_OUTPUT.PUT_LINE(v_num||' Weight: ' || v_pokemon.weight);
+ 24     end if;
+ 25     if v_num=5 then
+ 26                     DBMS_OUTPUT.PUT_LINE(v_num||' Location: ' || v_pokemon.location);
+ 27     end if;
+ 28     v_num := v_num+1;
+ 29     exit when v_num>5;
+ 30      end loop;
+ 31  END;
+ 32  /
+1 Pokemon ID: 25
+2 Name: Pikachu
+3 Level: 20
+3 Height: .4
+4 Weight: 6
+5 Location: Forest
+
+PL/SQL procedure successfully completed.
+
+12 WHILE LOOP
+===========
+
+SQL> DECLARE
+  2      v_pokemon Pokemon%ROWTYPE;
+  3  BEGIN
+  4      SELECT *
+  5      INTO v_pokemon
+  6      FROM Pokemon
+  7      WHERE pokemon_name='Pikachu';
+  8      for v_num in 1..6 loop
+  9     if v_num=1 then
+ 10                     DBMS_OUTPUT.PUT_LINE(v_num||'Pokemon ID: ' || v_pokemon.pokemon_id);
+ 11     elsif v_num=2 then
+ 12                     DBMS_OUTPUT.PUT_LINE(v_num||'Name: ' || v_pokemon.pokemon_name);
+ 13     elsif v_num=3 then
+ 14                     DBMS_OUTPUT.PUT_LINE(v_num||'Level: ' || v_pokemon.lv);
+ 15     elsif v_num=3 then
+ 16                     DBMS_OUTPUT.PUT_LINE(v_num||'Height: ' || v_pokemon.height);
+ 17     elsif v_num=4 then
+ 18                     DBMS_OUTPUT.PUT_LINE(v_num||'Weight: ' || v_pokemon.weight);
+ 19     elsif v_num=5 then
+ 20                     DBMS_OUTPUT.PUT_LINE(v_num||'Location: ' || v_pokemon.location);
+ 21     end if;
+ 22      end loop;
+ 23  END;
+ 24  /
+1Pokemon ID: 25
+2Name: Pikachu
+3Level: 20
+4Weight: 6
+5Location: Forest
+
+PL/SQL procedure successfully completed.
+
+13 FOR LOOP
+=============
+
+SQL> DECLARE
+  2      v_pokemon Pokemon%ROWTYPE;
+  3  BEGIN
+  4      SELECT *
+  5      INTO v_pokemon
+  6      FROM Pokemon
+  7      WHERE pokemon_name='Pikachu';
+  8      for v_num in 1..6 loop
+  9     if v_num=1 then
+ 10                     DBMS_OUTPUT.PUT_LINE(v_num||'Pokemon ID: ' || v_pokemon.pokemon_id);
+ 11     elsif v_num=2 then
+ 12                     DBMS_OUTPUT.PUT_LINE(v_num||'Name: ' || v_pokemon.pokemon_name);
+ 13     elsif v_num=3 then
+ 14                     DBMS_OUTPUT.PUT_LINE(v_num||'Level: ' || v_pokemon.lv);
+ 15     elsif v_num=3 then
+ 16                     DBMS_OUTPUT.PUT_LINE(v_num||'Height: ' || v_pokemon.height);
+ 17     elsif v_num=4 then
+ 18                     DBMS_OUTPUT.PUT_LINE(v_num||'Weight: ' || v_pokemon.weight);
+ 19     elsif v_num=5 then
+ 20                     DBMS_OUTPUT.PUT_LINE(v_num||'Location: ' || v_pokemon.location);
+ 21     end if;
+ 22      end loop;
+ 23  END;
+ 24  /
+1Pokemon ID: 25
+2Name: Pikachu
+3Level: 20
+4Weight: 6
+5Location: Forest
+
+PL/SQL procedure successfully completed.
+
+SQL> DECLARE
+  2      v_pokemon Pokemon%ROWTYPE;
+  3  BEGIN
+  4      SELECT *
+  5      INTO v_pokemon
+  6      FROM Pokemon
+  7      WHERE pokemon_name='Pikachu';
+  8      for v_num in 1..11 by 2 loop
+  9     if v_num=1 then
+ 10                     DBMS_OUTPUT.PUT_LINE(v_num||' Pokemon ID: ' || v_pokemon.pokemon_id);
+ 11     elsif v_num=2 then
+ 12                     DBMS_OUTPUT.PUT_LINE(v_num||' Name: ' || v_pokemon.pokemon_name);
+ 13     elsif v_num=3 then
+ 14                     DBMS_OUTPUT.PUT_LINE(v_num||' Level: ' || v_pokemon.lv);
+ 15     elsif v_num=3 then
+ 16                     DBMS_OUTPUT.PUT_LINE(v_num||' Height: ' || v_pokemon.height);
+ 17     elsif v_num=4 then
+ 18                     DBMS_OUTPUT.PUT_LINE(v_num||' Weight: ' || v_pokemon.weight);
+ 19     elsif v_num=5 then
+ 20                     DBMS_OUTPUT.PUT_LINE(v_num||' Location: ' || v_pokemon.location);
+ 21     end if;
+ 22      end loop;
+ 23  END;
+ 24  /
+1 Pokemon ID: 25
+3 Level: 20
+5 Location: Forest
+PL/SQL procedure successfully completed.
+
+14 Cursor FOR LOOP
+==================
+
+SQL> DECLARE
+  2      CURSOR pokemon_cursor IS
+  3          SELECT pokemon_name FROM Pokemon;
+  4  BEGIN
+  5      FOR rec IN pokemon_cursor LOOP
+  6          DBMS_OUTPUT.PUT_LINE('Pokemon: '||rec.pokemon_name);
+  7      END LOOP;
+  8  END;
+  9  /
+Pokemon: Bulbasaur
+Pokemon: Charmander
+Pokemon: Eevee
+Pokemon: Pikachu
+Pokemon: Squirtle
+
+PL/SQL procedure successfully completed.
+
+15 Implicit Cursor FOR LOOP
+===========================
+SQL> BEGIN
+  2      FOR rec IN (SELECT pokemon_name FROM Pokemon) LOOP
+  3          DBMS_OUTPUT.PUT_LINE(rec.pokemon_name);
+  4      END LOOP;
+  5  END;
+  6  /
+Bulbasaur
+Charmander
+Eevee
+Pikachu
+Squirtle
+
+PL/SQL procedure successfully completed.
+
+16 EXIT and CONTINUE
+====================
+
+SQL> BEGIN
+  2      FOR i IN 1..10 LOOP
+  3
+  4          IF i = 5 THEN
+  5              CONTINUE;
+  6          END IF;
+  7
+  8          DBMS_OUTPUT.PUT_LINE(i);
+  9
+ 10          IF i = 8 THEN
+ 11              EXIT;
+ 12          END IF;
+ 13
+ 14      END LOOP;
+ 15  END;
+ 16  /
+1
+2
+3
+4
+6
+7
+8
+
+PL/SQL procedure successfully completed.
+
+17 Exception – NO_DATA_FOUND
+============================
+
+SQL> DECLARE
+  2      v_name Pokemon.pokemon_name%TYPE;
+  3  BEGIN
+  4      SELECT pokemon_name
+  5      INTO v_name
+  6      FROM Pokemon
+  7      WHERE pokemon_id=999;
+  8
+  9  EXCEPTION
+ 10      WHEN NO_DATA_FOUND THEN
+ 11          DBMS_OUTPUT.PUT_LINE('Pokemon not found');
+ 12  END;
+ 13  /
+Pokemon not found
+
+PL/SQL procedure successfully completed.
+
+18 TOO_MANY_ROWS
+================
+
+SQL> DECLARE
+  2      v_name Pokemon.pokemon_name%TYPE;
+  3  BEGIN
+  4      SELECT pokemon_name
+  5      INTO v_name
+  6      FROM Pokemon
+  7      WHERE location='Forest';
+  8
+  9  EXCEPTION
+ 10      WHEN TOO_MANY_ROWS THEN
+ 11          DBMS_OUTPUT.PUT_LINE('More than one pokemon found');
+ 12  END;
+ 13  /
+More than one pokemon found
+
+PL/SQL procedure successfully completed.
+
+19 ZERO_DIVIDE
+==============
+
+SQL> DECLARE
+  2      a NUMBER :=10;
+  3      b NUMBER :=0;
+  4      c NUMBER;
+  5  BEGIN
+  6      c := a/b;
+  7
+  8  EXCEPTION
+  9      WHEN ZERO_DIVIDE THEN
+ 10          DBMS_OUTPUT.PUT_LINE('Division by zero error');
+ 11  END;
+ 12  /
+Division by zero error
+
+PL/SQL procedure successfully completed.
+
+20 VALUE_ERROR
+==============
+
+SQL> DECLARE
+  2      v_text VARCHAR2(10);
+  3      v_num NUMBER;
+  4  BEGIN
+  5      v_text := 'ABC';
+  6      v_num := TO_NUMBER(v_text);
+  7
+  8  EXCEPTION
+  9      WHEN VALUE_ERROR THEN
+ 10          DBMS_OUTPUT.PUT_LINE('Invalid number');
+ 11  END;
+ 12  /
+Invalid number
+
+PL/SQL procedure successfully completed.
+
+21 OTHERS Exception
+===================
+
+SQL> DECLARE
+  2      v_name Pokemon.pokemon_name%TYPE;
+  3  BEGIN
+  4      SELECT pokemon_name
+  5      INTO v_name
+  6      FROM Pokemon
+  7      WHERE pokemon_id=1000;
+  8
+  9  EXCEPTION
+ 10      WHEN OTHERS THEN
+ 11          DBMS_OUTPUT.PUT_LINE('Unexpected error: ' || SQLERRM);
+ 12  END;
+ 13  /
+Unexpected error: ORA-01403: no data found
+
+PL/SQL procedure successfully completed.
+
+22 User Defined Exception
+=========================
+
+SQL> DECLARE
+  2      e_low_level EXCEPTION;
+  3      v_lv NUMBER :=5;
+  4  BEGIN
+  5
+  6      IF v_lv < 10 THEN
+  7          RAISE e_low_level;
+  8      END IF;
+  9
+ 10  EXCEPTION
+ 11      WHEN e_low_level THEN
+ 12          DBMS_OUTPUT.PUT_LINE('Pokemon level too low');
+ 13  END;
+ 14  /
+Pokemon level too low
+
+PL/SQL procedure successfully completed.
